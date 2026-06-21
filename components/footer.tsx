@@ -13,11 +13,9 @@ export function Footer() {
     amsterdam: "",
   })
 
-  // Update time zones every second
   useEffect(() => {
     const updateTimes = () => {
       const now = new Date()
-
       setCurrentTime({
         lagos: now.toLocaleTimeString("en-US", {
           timeZone: "Africa/Lagos",
@@ -42,7 +40,6 @@ export function Footer() {
 
     updateTimes()
     const interval = setInterval(updateTimes, 1000)
-
     return () => clearInterval(interval)
   }, [])
 
@@ -50,10 +47,7 @@ export function Footer() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
     },
   }
 
@@ -62,21 +56,44 @@ export function Footer() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
     },
   }
 
+  const colLabel = {
+    color: "#D6FF5C",
+    fontSize: 11,
+    fontWeight: 600,
+    letterSpacing: "0.13em",
+    textTransform: "uppercase" as const,
+    marginBottom: "1.5rem",
+    display: "block",
+  }
+
+  const navLink =
+    "text-[#C9D6CE] hover:text-[#D6FF5C] transition-colors group inline-flex items-center gap-2"
+
   return (
-    <footer className="relative bg-matrix-bg border-t border-matrix-border">
-      {/* Marquee Banner */}
-      <div className="relative overflow-hidden bg-matrix-blue py-6 md:py-8">
+    <footer style={{ backgroundColor: "#0B1F17", borderTop: "1px solid #1A332A" }}>
+
+      {/* Marquee Banner — lime, NOT blue */}
+      <div
+        className="relative overflow-hidden py-6 md:py-8"
+        style={{ backgroundColor: "#D6FF5C" }}
+      >
         <div className="flex animate-marquee whitespace-nowrap">
           {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center mx-8 md:mx-12">
-              <span className="text-3xl md:text-5xl lg:text-6xl font-bold text-white">Building Better Brands</span>
+              <span
+                className="text-3xl md:text-5xl lg:text-6xl font-bold"
+                style={{ color: "#16240A" }}
+              >
+                Building Better Brands
+              </span>
               <ArrowRight
-                className="w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16 mx-8 md:mx-12 text-white"
+                className="w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16 mx-8 md:mx-12"
                 strokeWidth={2}
+                style={{ color: "#16240A" }}
               />
             </div>
           ))}
@@ -84,181 +101,121 @@ export function Footer() {
       </div>
 
       {/* Main Footer Content */}
-      <div className="container mx-auto px-6 py-16 md:py-24">
+      <div className="container mx-auto px-6 py-20 md:py-28">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8"
+          className="grid grid-cols-1 md:grid-cols-12 gap-14 md:gap-20"
         >
-          {/* Get in touch - 5 columns */}
+
+          {/* Get in touch — 5 columns */}
           <motion.div variants={itemVariants} className="md:col-span-5">
-            <h3 className="text-matrix-blue text-sm font-medium mb-6 uppercase tracking-wider">Get in touch</h3>
-            <div className="space-y-6">
+            <span style={colLabel}>Get in touch</span>
+            <div className="space-y-8">
               <a
-                href="mailto:thematrixxhouse@gmail.com"
-                className="block text-2xl md:text-3xl lg:text-4xl font-medium text-matrix-text hover:text-matrix-blue transition-colors underline decoration-1 underline-offset-8"
+                href="mailto:hello@thematrixhq.com"
+                style={{ color: "#F0EDE6", fontSize: 28, fontWeight: 500, lineHeight: 1.2 }}
+                className="block hover:text-[#D6FF5C] transition-colors underline decoration-1 underline-offset-8"
               >
                 hello@thematrixhq.com
               </a>
 
-              {/* Address */}
-              <div className="space-y-2 text-matrix-text-muted">
-                <p className="text-sm uppercase tracking-wider font-medium text-matrix-blue">Location</p>
-                <p className="text-base">Lagos, Nigeria</p>
-                <p className="text-sm text-matrix-text-dim">(6.5244° N, 3.3792° E)</p>
+              <div className="space-y-1.5">
+                <p style={{ color: "#D6FF5C", fontSize: 11, fontWeight: 600, letterSpacing: "0.13em", textTransform: "uppercase" }}>
+                  Location
+                </p>
+                <p style={{ color: "#C9D6CE", fontSize: 14 }}>Lagos, Nigeria</p>
+                <p style={{ color: "#5C7A6A", fontSize: 13 }}>(6.5244° N, 3.3792° E)</p>
               </div>
 
-              {/* Time Zones */}
-              <div className="space-y-3 pt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Clock className="w-4 h-4 text-matrix-blue" />
-                  <p className="text-sm uppercase tracking-wider font-medium text-matrix-blue">Local Time</p>
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center gap-2 mb-4">
+                  <Clock className="w-3.5 h-3.5" style={{ color: "#D6FF5C" }} />
+                  <p style={{ color: "#D6FF5C", fontSize: 11, fontWeight: 600, letterSpacing: "0.13em", textTransform: "uppercase" }}>
+                    Local Time
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm pb-2 border-b border-matrix-border">
-                    <span className="text-matrix-text-muted">Nigeria</span>
-                    <span className="text-matrix-text font-mono">{currentTime.lagos}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm pb-2 border-b border-matrix-border">
-                    <span className="text-matrix-text-muted">New York</span>
-                    <span className="text-matrix-text font-mono">{currentTime.newYork}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm pb-2 border-b border-matrix-border">
-                    <span className="text-matrix-text-muted">Amsterdam</span>
-                    <span className="text-matrix-text font-mono">{currentTime.amsterdam}</span>
-                  </div>
+                <div className="space-y-2.5">
+                  {[
+                    { label: "Nigeria", time: currentTime.lagos },
+                    { label: "New York", time: currentTime.newYork },
+                    { label: "Amsterdam", time: currentTime.amsterdam },
+                  ].map(({ label, time }) => (
+                    <div
+                      key={label}
+                      className="flex justify-between items-center pb-2.5"
+                      style={{ borderBottom: "1px solid #1A332A" }}
+                    >
+                      <span style={{ color: "#7C8C82", fontSize: 13 }}>{label}</span>
+                      <span style={{ color: "#C9D6CE", fontSize: 13, fontFamily: "monospace" }}>{time}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Navigation - 3 columns */}
+          {/* Navigation — 3 columns */}
           <motion.div variants={itemVariants} className="md:col-span-3">
-            <h3 className="text-matrix-blue text-sm font-medium mb-6 uppercase tracking-wider">Navigation</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="/"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  Home
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  About
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/work"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  Projects
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#services"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  Services
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  Contact
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-              </li>
+            <span style={colLabel}>Navigation</span>
+            <ul className="space-y-4">
+              {[
+                { href: "/",           label: "Home" },
+                { href: "/about",      label: "About" },
+                { href: "/work",       label: "Projects" },
+                { href: "/#services",  label: "Services" },
+                { href: "/contact",    label: "Contact" },
+              ].map(({ href, label }) => (
+                <li key={label}>
+                  <Link href={href} className={navLink} style={{ fontSize: 14 }}>
+                    {label}
+                    <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
+                </li>
+              ))}
             </ul>
           </motion.div>
 
-          {/* Social Links - 4 columns */}
+          {/* Connect — 4 columns */}
           <motion.div variants={itemVariants} className="md:col-span-4">
-            <h3 className="text-matrix-blue text-sm font-medium mb-6 uppercase tracking-wider">Connect</h3>
-            <ul className="space-y-3">
-              <li>
-                <a
-                  href="https://www.instagram.com/thematrixhq/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  Instagram
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.linkedin.com/company/thematrixhq"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  LinkedIn
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://web.facebook.com/thematrixxhouse"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  Facebook
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.behance.net/maestrobrendon"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  Behance
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://wa.me/2347045985964"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-matrix-text hover:text-matrix-blue transition-colors text-lg group inline-flex items-center gap-2"
-                >
-                  WhatsApp
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-              </li>
+            <span style={colLabel}>Connect</span>
+            <ul className="space-y-4">
+              {[
+                { href: "https://www.instagram.com/thematrixhq/",           label: "Instagram" },
+                { href: "https://www.linkedin.com/company/thematrixhq",     label: "LinkedIn" },
+                { href: "https://web.facebook.com/thematrixxhouse",          label: "Facebook" },
+                { href: "https://www.behance.net/maestrobrendon",            label: "Behance" },
+                { href: "https://wa.me/2347045985964",                       label: "WhatsApp" },
+              ].map(({ href, label }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={navLink}
+                    style={{ fontSize: 14 }}
+                  >
+                    {label}
+                    <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                </li>
+              ))}
             </ul>
           </motion.div>
         </motion.div>
 
-        {/* Bottom Section */}
+        {/* Bottom bar */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-16 md:mt-24 pt-8 border-t border-matrix-border"
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-20 md:mt-24 pt-8"
+          style={{ borderTop: "1px solid #1A332A" }}
         >
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-            {/* Left side - Logo and Company info */}
             <div className="flex items-center gap-6">
               <div className="relative w-32 h-10 md:w-40 md:h-12">
                 <Image
@@ -268,51 +225,51 @@ export function Footer() {
                   className="object-contain"
                 />
               </div>
-              <div className="space-y-1 text-matrix-text-muted text-sm">
-                <p>© {new Date().getFullYear()} The Matrix HQ</p>
-                <p className="text-xs">All rights reserved</p>
+              <div className="space-y-1">
+                <p style={{ color: "#7C8C82", fontSize: 13 }}>© {new Date().getFullYear()} The Matrix HQ</p>
+                <p style={{ color: "#4A6B58", fontSize: 12 }}>All rights reserved</p>
               </div>
             </div>
 
-            {/* Center - Tagline */}
-            <div className="text-matrix-text-dim text-sm md:text-base italic">"No trends. Just timeless."</div>
+            <div style={{ color: "#5C7A6A", fontSize: 14 }} className="italic">
+              &ldquo;No trends. Just timeless.&rdquo;
+            </div>
 
-            {/* Right side - Scroll to top button */}
             <motion.button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              whileHover={{ scale: 1.1 }}
+              whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
-              className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-matrix-blue hover:bg-matrix-blue-light flex items-center justify-center transition-colors group"
+              className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-colors"
+              style={{ backgroundColor: "#D6FF5C" }}
               aria-label="Scroll to top"
             >
-              <ArrowUpRight className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+              <ArrowUpRight className="w-6 h-6" style={{ color: "#16240A" }} />
             </motion.button>
           </div>
 
-          {/* Legal Links */}
-          <div className="mt-8 pt-6 border-t border-matrix-border flex flex-wrap gap-4 md:gap-6 text-sm text-matrix-text-dim">
-            <Link href="/privacy" className="hover:text-matrix-blue transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-matrix-blue transition-colors">
-              Terms & Conditions
-            </Link>
-            <Link href="/cookies" className="hover:text-matrix-blue transition-colors">
-              Cookie Policy
-            </Link>
+          <div className="mt-8 pt-6 flex flex-wrap gap-5" style={{ borderTop: "1px solid #1A332A" }}>
+            {[
+              { href: "/privacy", label: "Privacy Policy" },
+              { href: "/terms",   label: "Terms & Conditions" },
+              { href: "/cookies", label: "Cookie Policy" },
+            ].map(({ href, label }) => (
+              <Link
+                key={label}
+                href={href}
+                style={{ color: "#4A6B58", fontSize: 13 }}
+                className="hover:text-[#D6FF5C] transition-colors"
+              >
+                {label}
+              </Link>
+            ))}
           </div>
         </motion.div>
       </div>
 
-      {/* CSS for marquee animation */}
       <style jsx>{`
         @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
         .animate-marquee {
           animation: marquee 12s linear infinite;

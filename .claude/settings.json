@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.superside.com)",
+      "Bash(node -e \"const lr = require\\('lucide-react'\\); const needed = ['Infinity','RotateCcw','Clock','UserCheck','MessageSquare','Shield','Palette','Code2','Globe','Video','Printer','PenLine','Package','Megaphone','ChevronDown','ArrowRight','ArrowDown','Check','X']; needed.forEach\\(n => console.log\\(n, !!lr[n]\\)\\)\")",
+      "Bash(node -e \"const lr = require\\('lucide-react'\\); console.log\\('Presentation:', !!lr.Presentation\\); console.log\\('PresentationIcon:', !!lr.PresentationIcon\\);\")",
+      "Bash(npx tsc *)",
+      "Bash(npx next *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "PowerShell(cd \"C:\\\\Users\\\\BRENDON OLEGHE\\\\Matrix HQ New Website\\\\thematrixhqwebsite\"; npx tsc --noEmit 2>&1 | Where-Object { $_ -notmatch \"offer/page\" } | Select-Object -First 20)",
+      "PowerShell(cd \"c:\\\\Users\\\\BRENDON OLEGHE\\\\Matrix HQ New Website\\\\thematrixhqwebsite\"; npx tsc --noEmit 2>&1 | Where-Object { $_ -match \"pricing\" } | Select-Object -First 20)"
+    ]
+  }
+}

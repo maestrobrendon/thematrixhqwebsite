@@ -1,291 +1,378 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, Instagram, Linkedin, Facebook, Dribbble, Clock } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Menu, X, ChevronDown, ArrowRight } from "lucide-react"
+
+const BEZIER = [0.25, 0, 0, 1] as [number, number, number, number]
+
+const services = [
+  { label: "Brand Identity",          href: "/#services" },
+  { label: "Marketing & Advertising", href: "/#services" },
+  { label: "Digital & Web",           href: "/#services" },
+  { label: "Motion & Video",          href: "/#services" },
+  { label: "Print",                   href: "/#services" },
+  { label: "Illustration & Artwork",  href: "/#services" },
+  { label: "Presentations",           href: "/#services" },
+  { label: "Product & Packaging",     href: "/#services" },
+]
+
+const navLinks = [
+  { label: "Our Work", href: "/work" },
+  { label: "Pricing",  href: "/pricing" },
+  { label: "About",    href: "/about" },
+  { label: "Contact",  href: "/contact" },
+]
 
 export function NavigationHeader() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [currentTime, setCurrentTime] = useState({
-    lagos: "",
-    newYork: "",
-    amsterdam: "",
-  })
   const pathname = usePathname()
+  const [scrolled, setScrolled]       = useState(false)
+  const [menuOpen, setMenuOpen]       = useState(false)
+  const [dropOpen, setDropOpen]       = useState(false)
+  const dropRef                       = useRef<HTMLDivElement>(null)
+  const dropTimeout                   = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const navLinks = [
-    { name: "Home", href: "/", type: "page" },
-    { name: "About", href: "/about", type: "page" },
-    { name: "Projects", href: "/work", type: "page" },
-    { name: "Contact", href: "/contact", type: "page" },
-  ]
-
-  const socialLinks = [
-    {
-      name: "Instagram",
-      icon: Instagram,
-      url: "https://www.instagram.com/thematrixhq/",
-    },
-    {
-      name: "LinkedIn",
-      icon: Linkedin,
-      url: "https://www.linkedin.com/company/thematrixhq",
-    },
-    {
-      name: "Facebook",
-      icon: Facebook,
-      url: "https://web.facebook.com/thematrixxhouse",
-    },
-    {
-      name: "Behance",
-      icon: Dribbble,
-      url: "https://www.behance.net/maestrobrendon",
-    },
-  ]
-
-  // Update time zones every second
+  // ── Scroll detection ──────────────────────────────────────────────────────
   useEffect(() => {
-    const updateTimes = () => {
-      const now = new Date()
-
-      setCurrentTime({
-        lagos: now.toLocaleTimeString("en-US", {
-          timeZone: "Africa/Lagos",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-        newYork: now.toLocaleTimeString("en-US", {
-          timeZone: "America/New_York",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-        amsterdam: now.toLocaleTimeString("en-US", {
-          timeZone: "Europe/Amsterdam",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-      })
-    }
-
-    updateTimes()
-    const interval = setInterval(updateTimes, 1000)
-
-    return () => clearInterval(interval)
+    const onScroll = () => setScrolled(window.scrollY > 80)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  // Close menu when route changes
-  useEffect(() => {
-    setIsMenuOpen(false)
-  }, [pathname])
+  // ── Close mobile menu on route change ─────────────────────────────────────
+  useEffect(() => { setMenuOpen(false); setDropOpen(false) }, [pathname])
 
-  // Prevent scroll when menu is open
+  // ── Lock body scroll when mobile menu is open ─────────────────────────────
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = "unset"
-    }
-    return () => {
-      document.body.style.overflow = "unset"
-    }
-  }, [isMenuOpen])
+    document.body.style.overflow = menuOpen ? "hidden" : ""
+    return () => { document.body.style.overflow = "" }
+  }, [menuOpen])
+
+  // ── Hover handlers with short delay so cursor can move into panel ─────────
+  const openDrop  = () => {
+    if (dropTimeout.current) clearTimeout(dropTimeout.current)
+    setDropOpen(true)
+  }
+  const closeDrop = () => {
+    dropTimeout.current = setTimeout(() => setDropOpen(false), 120)
+  }
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href)
 
   return (
     <>
-      {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md border-b border-white/10">
-        <div className="container mx-auto px-6 md:px-12 lg:px-24 h-20 flex items-center justify-between">
+      {/* ── NAV BAR ──────────────────────────────────────────────────────── */}
+      <motion.nav
+        className="fixed top-0 left-0 right-0 z-50 w-full"
+        animate={{
+          backgroundColor: scrolled ? "#0B1F17" : "rgba(11,31,23,0.45)",
+          backdropFilter:   scrolled ? "blur(0px)"  : "blur(14px)",
+          borderBottomColor: scrolled ? "rgba(26,51,42,1)" : "rgba(26,51,42,0.4)",
+        }}
+        transition={{ duration: 0.35, ease: BEZIER }}
+        style={{ borderBottom: "1px solid rgba(26,51,42,0.4)" }}
+      >
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-10 lg:px-14 h-17 flex items-center justify-between gap-8">
+
           {/* Logo */}
-          <Link href="/" className="relative w-32 h-8 block z-50">
+          <Link href="/" className="relative shrink-0 w-32.5 h-9 block" aria-label="The Matrix HQ — Home">
             <Image
-              src="/images/design-mode/Artboard%20301.png"
-              alt="Matrix HQ"
+              src="/images/design-mode/sswh8theoz9tocz5g2tp.png"
+              alt="The Matrix HQ"
               fill
-              className="object-contain leading-7"
+              className="object-contain object-left"
               priority
             />
           </Link>
 
-          <div className="flex items-center gap-4">
-            {/* Desktop "Start your journey" Button */}
-            <Button
-              asChild
-              className="hidden md:flex h-11 px-6 rounded-full bg-white text-black hover:bg-gray-200 font-medium text-sm transition-all"
-            >
-              <Link href="https://wa.me/2347045985964" target="_blank" rel="noopener noreferrer">
-                Start your journey
-              </Link>
-            </Button>
+          {/* ── Desktop links ───────────────────────────────────────────── */}
+          <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
 
-            {/* Hamburger Menu Button */}
+            {/* Services dropdown trigger */}
+            <div
+              ref={dropRef}
+              className="relative"
+              onMouseEnter={openDrop}
+              onMouseLeave={closeDrop}
+            >
+              <button
+                className="flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{ color: dropOpen ? "#ffffff" : "#C9D6CE" }}
+                onClick={() => setDropOpen((o) => !o)}
+                aria-expanded={dropOpen}
+                aria-haspopup="true"
+              >
+                Services
+                <motion.span
+                  animate={{ rotate: dropOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2, ease: BEZIER }}
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </motion.span>
+              </button>
+
+              {/* Dropdown panel */}
+              <AnimatePresence>
+                {dropOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.2, ease: BEZIER }}
+                    onMouseEnter={openDrop}
+                    onMouseLeave={closeDrop}
+                    className="absolute top-[calc(100%+10px)] left-0 rounded-2xl overflow-hidden shadow-2xl z-50"
+                    style={{
+                      backgroundColor: "#0B1F17",
+                      border: "1px solid #1A332A",
+                      minWidth: 240,
+                    }}
+                  >
+                    <div className="p-2">
+                      <p
+                        style={{ color: "#5C7A6A", fontSize: 10, letterSpacing: "0.13em" }}
+                        className="uppercase font-semibold px-3 pt-2 pb-1"
+                      >
+                        What we do
+                      </p>
+                      {services.map((svc) => (
+                        <Link
+                          key={svc.label}
+                          href={svc.href}
+                          className="flex items-center gap-2 px-3 py-2.5 rounded-lg group transition-colors"
+                          style={{ color: "#C9D6CE" }}
+                          onClick={() => setDropOpen(false)}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#142B22")}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                        >
+                          <span
+                            className="text-sm font-medium transition-colors group-hover:text-white"
+                            style={{ color: "inherit" }}
+                          >
+                            {svc.label}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Other nav links */}
+            {navLinks.map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                className="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{
+                  color: isActive(href) ? "#ffffff" : "#C9D6CE",
+                  backgroundColor: isActive(href) ? "rgba(214,255,92,0.08)" : "transparent",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive(href))
+                    (e.currentTarget as HTMLElement).style.color = "#ffffff"
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive(href))
+                    (e.currentTarget as HTMLElement).style.color = "#C9D6CE"
+                }}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+
+          {/* ── Right: CTA + hamburger ───────────────────────────────────── */}
+          <div className="flex items-center gap-3 shrink-0">
+            <Link
+              href="https://wa.me/2347045985964"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-sm font-semibold transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#D6FF5C", color: "#16240A" }}
+            >
+              Start now
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+
+            {/* Hamburger — mobile only */}
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="relative z-50 text-white hover:text-gray-300 transition-colors"
+              onClick={() => setMenuOpen((o) => !o)}
+              className="md:hidden relative z-50 w-10 h-10 flex items-center justify-center rounded-lg transition-colors"
+              style={{ color: "#ffffff" }}
               aria-label="Toggle menu"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <AnimatePresence mode="wait" initial={false}>
+                {menuOpen ? (
+                  <motion.span
+                    key="x"
+                    initial={{ opacity: 0, rotate: -45 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: 45 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="menu"
+                    initial={{ opacity: 0, rotate: 45 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: -45 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    <Menu className="w-5 h-5" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
-      {/* Full Screen Menu Overlay */}
-      <div
-        className={`fixed inset-0 z-40 bg-black transition-opacity duration-500 ${
-          isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
-      >
-        <div className="container mx-auto px-6 md:px-12 lg:px-24 h-full flex flex-col md:flex-row pt-24 pb-12 overflow-y-auto">
-          {/* Left Side - Navigation & Contact */}
-          <div className="flex-1 flex flex-col justify-between py-8 md:py-12 md:pr-16 border-b md:border-b-0 md:border-r border-white/10 mb-8 md:mb-0 pb-8 md:pb-0">
-            {/* Navigation Links */}
-            <nav className="flex flex-col gap-4 md:gap-6">
-              {navLinks.map((link, index) => {
-                const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href))
+      {/* ── MOBILE MENU ─────────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            key="mobile-menu"
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ duration: 0.35, ease: BEZIER }}
+            className="fixed inset-0 z-40 flex flex-col overflow-y-auto"
+            style={{ backgroundColor: "#0B1F17" }}
+          >
+            {/* Top spacer for nav bar */}
+            <div className="h-17 shrink-0" />
 
-                return (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`text-4xl md:text-6xl lg:text-7xl font-bold transition-all duration-300 group relative inline-block w-fit ${
-                      isActive ? "text-white" : "text-gray-600 hover:text-white"
-                    }`}
-                    style={{
-                      animation: isMenuOpen ? `fade-in-up 0.5s ease-out ${index * 0.1}s forwards` : "none",
-                      opacity: isMenuOpen ? 1 : 0,
-                    }}
+            <div className="flex-1 px-6 py-8 flex flex-col">
+
+              {/* Primary links */}
+              <nav className="flex flex-col gap-1 mb-8">
+                {/* Services — expandable on mobile */}
+                <MobileServicesAccordion onClose={() => setMenuOpen(false)} />
+
+                {navLinks.map(({ label, href }, i) => (
+                  <motion.div
+                    key={href}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.06, duration: 0.35, ease: BEZIER }}
                   >
-                    <span className="relative">
-                      {link.name}
-                      {/* Animated underline */}
-                      <span
-                        className={`absolute -bottom-2 left-0 h-1 bg-matrix-blue transition-all duration-300 ${
-                          isActive ? "w-full" : "w-0 group-hover:w-full"
-                        }`}
-                      />
-                    </span>
-                  </Link>
-                )
-              })}
-            </nav>
-
-            {/* Contact Info */}
-            <div
-              className="mt-12 md:mt-0"
-              style={{
-                animation: isMenuOpen ? "fade-in-up 0.5s ease-out 0.5s forwards" : "none",
-                opacity: isMenuOpen ? 1 : 0,
-              }}
-            >
-              <p className="text-sm text-gray-500 uppercase tracking-wider mb-4">Talk with us</p>
-              <a
-                href="mailto:hello@thematrixhq.com"
-                className="text-xl md:text-2xl text-white hover:text-matrix-blue transition-colors mb-4 block font-medium"
-              >
-                hello@thematrixhq.com
-              </a>
-            </div>
-          </div>
-
-          {/* Right Side - Time Zones & Social */}
-          <div className="md:w-2/5 md:pl-16 flex flex-col justify-between py-8 md:py-12">
-            {/* Time Zones */}
-            <div
-              style={{
-                animation: isMenuOpen ? "fade-in-up 0.5s ease-out 0.3s forwards" : "none",
-                opacity: isMenuOpen ? 1 : 0,
-              }}
-            >
-              <div className="flex items-center gap-2 mb-6">
-                <Clock className="w-5 h-5 text-gray-500" />
-                <p className="text-sm text-gray-500 uppercase tracking-wider">Local Time</p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex justify-between items-center pb-3 border-b border-white/10">
-                  <span className="text-gray-400">Nigeria</span>
-                  <span className="text-white font-mono text-lg">{currentTime.lagos}</span>
-                </div>
-                <div className="flex justify-between items-center pb-3 border-b border-white/10">
-                  <span className="text-gray-400">New York</span>
-                  <span className="text-white font-mono text-lg">{currentTime.newYork}</span>
-                </div>
-                <div className="flex justify-between items-center pb-3 border-b border-white/10">
-                  <span className="text-gray-400">Amsterdam</span>
-                  <span className="text-white font-mono text-lg">{currentTime.amsterdam}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div
-              className="mt-12 md:mt-0"
-              style={{
-                animation: isMenuOpen ? "fade-in-up 0.5s ease-out 0.4s forwards" : "none",
-                opacity: isMenuOpen ? 1 : 0,
-              }}
-            >
-              <p className="text-sm text-gray-500 uppercase tracking-wider mb-6">Follow us</p>
-              <div className="grid grid-cols-2 gap-3">
-                {socialLinks.map((social, index) => (
-                  <Link
-                    key={index}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-matrix-blue transition-all group"
-                  >
-                    <social.icon className="w-5 h-5 text-gray-400 group-hover:text-matrix-blue transition-colors" />
-                    <span className="text-sm text-white">{social.name}</span>
-                  </Link>
+                    <Link
+                      href={href}
+                      className="block py-4 border-b text-2xl font-semibold transition-colors"
+                      style={{
+                        color: isActive(href) ? "#D6FF5C" : "#ffffff",
+                        borderBottomColor: "#1A332A",
+                      }}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {label}
+                    </Link>
+                  </motion.div>
                 ))}
-              </div>
-            </div>
+              </nav>
 
-            {/* Footer Info */}
-            <div
-              className="mt-12 md:mt-0 pt-8 border-t border-white/10"
-              style={{
-                animation: isMenuOpen ? "fade-in-up 0.5s ease-out 0.5s forwards" : "none",
-                opacity: isMenuOpen ? 1 : 0,
-              }}
-            >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm text-gray-500">
-                <p>© 2025 The Matrix HQ. All rights reserved.</p>
-                <div className="flex gap-4">
-                  <Link href="/privacy" className="hover:text-white transition-colors">
-                    Privacy
-                  </Link>
-                  <Link href="/cookies" className="hover:text-white transition-colors">
-                    Cookies
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              {/* CTA */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.4, ease: BEZIER }}
+                className="mt-auto"
+              >
+                <Link
+                  href="https://wa.me/2347045985964"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-4 rounded-full text-base font-semibold"
+                  style={{ backgroundColor: "#D6FF5C", color: "#16240A" }}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Start now
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
 
-      {/* Custom animations */}
-      <style jsx global>{`
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+                <p
+                  style={{ color: "#5C7A6A", fontSize: 13 }}
+                  className="text-center mt-6"
+                >
+                  Or email us at{" "}
+                  <a
+                    href="mailto:hello@thematrixhq.com"
+                    style={{ color: "#C9D6CE" }}
+                    className="underline underline-offset-4"
+                  >
+                    hello@thematrixhq.com
+                  </a>
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
+  )
+}
+
+// ── Mobile Services Accordion ─────────────────────────────────────────────────
+function MobileServicesAccordion({ onClose }: { onClose: () => void }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.03, duration: 0.35, ease: BEZIER }}
+    >
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center justify-between w-full py-4 border-b text-2xl font-semibold text-white"
+        style={{ borderBottomColor: "#1A332A" }}
+      >
+        Services
+        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.22 }}>
+          <ChevronDown className="w-5 h-5" style={{ color: "#D6FF5C" }} />
+        </motion.span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: BEZIER }}
+            className="overflow-hidden"
+          >
+            <div className="pt-2 pb-4 flex flex-col gap-0.5" style={{ borderBottom: "1px solid #1A332A" }}>
+              {services.map((svc) => (
+                <Link
+                  key={svc.label}
+                  href={svc.href}
+                  className="flex items-center gap-2 py-2.5 px-3 rounded-lg text-base"
+                  style={{ color: "#8CA89A" }}
+                  onClick={onClose}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#8CA89A")}
+                >
+                  <span
+                    className="w-1 h-1 rounded-full shrink-0"
+                    style={{ backgroundColor: "#D6FF5C" }}
+                  />
+                  {svc.label}
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
