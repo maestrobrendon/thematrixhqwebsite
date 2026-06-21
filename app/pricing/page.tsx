@@ -7,10 +7,26 @@ export const metadata = {
     "Simple, transparent creative subscription pricing. Unlimited design requests, senior talent, AI-powered speed.",
 }
 
-export default async function PricingPage() {
-  const h = await headers()
-  const country = h.get("x-vercel-ip-country") ?? "NG"
-  const defaultCurrency: "ngn" | "usd" = country === "NG" ? "ngn" : "usd"
+// Next.js 15 — searchParams is a Promise in async Server Components
+export default async function PricingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ currency?: string }>
+}) {
+  const [h, params] = await Promise.all([headers(), searchParams])
 
-  return <PricingClient defaultCurrency={defaultCurrency} />
+  // (1) ?currency= query param — highest priority, used for team-sent direct links
+  const param = params.currency?.toLowerCase()
+  if (param === "ngn" || param === "usd") {
+    return <PricingClient currency={param} />
+  }
+
+  // (2) Geo-detection via Vercel's auto-populated header
+  const country = h.get("x-vercel-ip-country")
+  if (country !== null) {
+    return <PricingClient currency={country === "NG" ? "ngn" : "usd"} />
+  }
+
+  // (3) Header absent (local dev / non-Vercel) — default NGN
+  return <PricingClient currency="ngn" />
 }

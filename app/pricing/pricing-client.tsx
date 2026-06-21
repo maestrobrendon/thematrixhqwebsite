@@ -207,37 +207,6 @@ const faqs = [
   },
 ]
 
-// ── CurrencyToggle ─────────────────────────────────────────────────────────
-function CurrencyToggle({
-  currency,
-  setCurrency,
-}: {
-  currency: "ngn" | "usd"
-  setCurrency: (c: "ngn" | "usd") => void
-}) {
-  return (
-    <div
-      className="inline-flex p-1 rounded-full"
-      style={{ backgroundColor: "#142B22", border: "1px solid #1A332A" }}
-    >
-      {(["ngn", "usd"] as const).map((c) => (
-        <button
-          key={c}
-          onClick={() => setCurrency(c)}
-          className="px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap"
-          style={
-            currency === c
-              ? { backgroundColor: "#D6FF5C", color: "#16240A" }
-              : { color: "#7C8C82", background: "transparent" }
-          }
-        >
-          {c === "ngn" ? "Nigeria (₦)" : "International ($)"}
-        </button>
-      ))}
-    </div>
-  )
-}
-
 // ── FAQ item ──────────────────────────────────────────────────────────────────
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false)
@@ -280,12 +249,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 // ── Main exported client ──────────────────────────────────────────────────────
-export function PricingClient({
-  defaultCurrency,
-}: {
-  defaultCurrency: "ngn" | "usd"
-}) {
-  const [currency, setCurrency] = useState<"ngn" | "usd">(defaultCurrency)
+export function PricingClient({ currency }: { currency: "ngn" | "usd" }) {
   const [activeTestimonial, setActiveTestimonial] = useState(0)
 
   return (
@@ -448,16 +412,13 @@ export function PricingClient({
             <motion.p
               variants={fadeUpV}
               style={{ color: "#C9D6CE", fontSize: 15 }}
-              className="mb-8"
+              className="mb-0"
             >
               Unlimited design. One flat rate. Pause or cancel anytime.
             </motion.p>
-            <motion.div variants={fadeUpV} className="flex justify-center mb-12">
-              <CurrencyToggle currency={currency} setCurrency={setCurrency} />
-            </motion.div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-12">
             {tiers.map((tier, i) => (
               <motion.div
                 key={i}
@@ -493,21 +454,11 @@ export function PricingClient({
                   {tier.desc}
                 </p>
 
-                {/* Price */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currency}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <p style={{ color: "#ffffff", fontWeight: 700 }} className="text-4xl mb-0.5">
-                      {currency === "ngn" ? tier.ngn : tier.usd}
-                      <span style={{ fontSize: 14, color: "#5C7A6A", fontWeight: 400 }}>/mo</span>
-                    </p>
-                  </motion.div>
-                </AnimatePresence>
+                {/* Price — resolved server-side, no client toggle */}
+                <p style={{ color: "#ffffff", fontWeight: 700 }} className="text-4xl mb-0.5">
+                  {currency === "ngn" ? tier.ngn : tier.usd}
+                  <span style={{ fontSize: 14, color: "#5C7A6A", fontWeight: 400 }}>/mo</span>
+                </p>
 
                 <p style={{ color: "#D6FF5C", fontSize: 11, lineHeight: 1.5 }} className="mb-4">
                   {tier.badge}
@@ -551,9 +502,20 @@ export function PricingClient({
             ))}
           </div>
 
-          <p style={{ color: "#5C7A6A", fontSize: 13 }} className="mt-8">
-            Not sure which plan fits? <Link href="/contact" style={{ color: "#D6FF5C" }} className="underline underline-offset-4">Talk to us</Link> — we&apos;ll figure it out together.
-          </p>
+          <div className="mt-8 flex flex-col items-center gap-2">
+            <p style={{ color: "#5C7A6A", fontSize: 13 }}>
+              {currency === "ngn"
+                ? "Billed monthly via Paystack or Flutterwave"
+                : "Billed monthly via Stripe"}
+            </p>
+            <p style={{ color: "#3D5E4C", fontSize: 13 }}>
+              Not sure which plan fits?{" "}
+              <Link href="/contact" style={{ color: "#D6FF5C" }} className="underline underline-offset-4">
+                Talk to us
+              </Link>{" "}
+              — we&apos;ll figure it out together.
+            </p>
+          </div>
         </div>
       </section>
 
