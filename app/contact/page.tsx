@@ -121,13 +121,13 @@ export default function ContactPage() {
             </motion.div>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-matrix-text mb-8 leading-[1.1]">
-              Hey! Tell us <br />
-              <span className="text-matrix-blue">all the things</span>
+              Tell us about
+              <br />
+              <span className="text-matrix-blue">your project.</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-matrix-text-muted max-w-2xl leading-relaxed">
-              Have a project in mind? Want to collaborate? Or just want to say hello? 
-              We'd love to hear from you.
+              The best work starts with a simple conversation. Tell us what you are building. We will take it from there.
             </p>
           </motion.div>
         </div>
@@ -151,7 +151,7 @@ export default function ContactPage() {
             >
               <div className="bg-matrix-surface border border-matrix-border rounded-3xl p-8 md:p-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-matrix-text mb-8">
-                  Start a conversation
+                  Direct access to our team. No bots.
                 </h2>
 
                 {isSubmitted ? (

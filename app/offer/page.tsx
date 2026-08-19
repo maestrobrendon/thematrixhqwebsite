@@ -373,10 +373,12 @@ const Footer = () => {
           <div className="flex flex-col gap-6 sm:gap-8 md:flex-row md:justify-between md:items-center">
             <div className="flex items-center gap-4 sm:gap-6">
               <div className="relative w-24 h-8 sm:w-32 sm:h-10 md:w-40 md:h-12">
-                <img
+                <Image
                   src="https://res.cloudinary.com/dusynu0kv/image/upload/v1764702838/zwrwxssoa618vin12l8m.avif"
                   alt="The Matrix HQ"
-                  className="h-full w-auto object-contain"
+                  fill
+                  className="object-contain"
+                  priority
                 />
               </div>
               <div className="space-y-0.5 sm:space-y-1 text-zinc-500 text-xs sm:text-sm">
@@ -786,10 +788,14 @@ export default function MatrixHQOffer() {
               >
                 {doubledLogos.map((logo, i) => (
                   <div key={i} className="flex-shrink-0">
-                    <img
+                    <Image
                       src={logo}
                       alt="Client logo"
-                      className="h-6 sm:h-8 w-auto opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
+                      width={0}
+                      height={0}
+                      sizes="80px"
+                      style={{ height: "24px", width: "auto" }}
+                      className="opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
                     />
                   </div>
                 ))}
@@ -1214,10 +1220,12 @@ export default function MatrixHQOffer() {
               <Reveal key={i} delay={i * 0.1}>
                 <a href={item.link} target="_blank" rel="noopener noreferrer" className="group block">
                   <div className="relative aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden bg-zinc-200 mb-3 sm:mb-4">
-                    <img
+                    <Image
                       src={item.image || "/placeholder.svg"}
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
                     <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4">
