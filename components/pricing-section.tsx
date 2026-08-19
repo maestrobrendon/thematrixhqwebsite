@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Check, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 function AnimatedHeadline() {
   const headlineRef = useRef<HTMLHeadingElement>(null)
@@ -44,7 +45,15 @@ export function PricingSection() {
     <section ref={sectionRef} className="relative bg-matrix-bg py-24 md:py-32 overflow-hidden">
       {/* Hero Image */}
       <div className="relative w-full mb-16 md:mb-24">
-        <img src="/images/design-mode/matrixhq.jpg" alt="Architectural 3D Design" className="w-full h-auto" />
+        <Image
+          src="/images/design-mode/matrixhq.jpg"
+          alt="Architectural 3D Design"
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: "100%", height: "auto" }}
+          priority
+        />
         {/* Gradient overlay for smooth transition to background */}
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-matrix-bg to-transparent" />
       </div>

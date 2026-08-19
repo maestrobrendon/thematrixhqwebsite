@@ -31,19 +31,19 @@ const goals = [
 
 const stats = [
   {
-    number: "90+",
-    label: "Projects finished",
-    description: "Bold ideas transformed into digital reality"
+    number: "30hr",
+    label: "First draft turnaround",
+    description: "AI-accelerated speed, finished by hand."
   },
   {
-    number: "15+",
-    label: "Years combined experience",
-    description: "Mastery built through relentless craft"
+    number: "100%",
+    label: "Art Director reviewed",
+    description: "Every file checked before it reaches you."
   },
   {
-    number: "50+",
-    label: "Happy clients",
-    description: "Partnerships built on trust and results"
+    number: "0",
+    label: "Template shortcuts",
+    description: "Every deliverable built from scratch for your brand."
   }
 ]
 
@@ -117,8 +117,7 @@ function HeroSection() {
           </h1>
           
           <p className="text-xl md:text-2xl text-matrix-text-muted max-w-3xl mb-12 leading-relaxed">
-            A team of strategists, designers, and builders bringing bold visions to life through 
-            clarity, emotion, and unforgettable execution.
+            A boutique creative roster, built around your brand. Senior Art Director eyes on every file before it reaches you. AI tools that compress production time without cutting corners on craft.
           </p>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
