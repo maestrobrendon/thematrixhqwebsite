@@ -516,3 +516,61 @@
   .feature-card,
   .card-lift { will-change: auto; }
 }
+
+/* ══════════════════════════════════════════
+   WIKI DESIGN TOKENS (wiki.thematrixhq.com)
+   Prefixed with --wiki- to avoid conflicts
+   ══════════════════════════════════════════ */
+:root {
+  --wiki-ink:        #0A0A0A;
+  --wiki-root:       #00301D;
+  --wiki-live:       #12B34A;
+  --wiki-human:      #FF4D00;
+  --wiki-paper:      #F1EFE8;
+  --wiki-white:      #FFFFFF;
+
+  --wiki-ink-60:     rgba(10,10,10,0.60);
+  --wiki-ink-40:     rgba(10,10,10,0.40);
+  --wiki-ink-20:     rgba(10,10,10,0.20);
+  --wiki-ink-12:     rgba(10,10,10,0.12);
+  --wiki-ink-07:     rgba(10,10,10,0.07);
+}
+
+.wiki-eyebrow {
+  font-family: var(--wiki-font-mono, 'JetBrains Mono', ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wiki-ink-40);
+}
+
+.wiki-body h2 {
+  font-family: var(--wiki-font-display, 'Archivo', system-ui, sans-serif);
+  font-weight: 600; font-size: 20px; letter-spacing: -0.02em;
+  color: var(--wiki-ink); margin: 40px 0 10px;
+  padding-top: 8px; border-top: 1px solid var(--wiki-ink-07);
+}
+.wiki-body h3 {
+  font-family: var(--wiki-font-display, 'Archivo', system-ui, sans-serif);
+  font-weight: 600; font-size: 15px; letter-spacing: -0.01em;
+  color: var(--wiki-ink); margin: 24px 0 6px;
+}
+.wiki-body p  { font-size: 15px; color: var(--wiki-ink-60); line-height: 1.65; margin-bottom: 14px; }
+.wiki-body ul, .wiki-body ol { margin: 0 0 18px 20px; display: flex; flex-direction: column; gap: 6px; }
+.wiki-body li { font-size: 14.5px; color: var(--wiki-ink-60); line-height: 1.6; }
+.wiki-body li strong { color: var(--wiki-ink); font-weight: 600; }
+.wiki-body blockquote { border-left: 2px solid var(--wiki-ink-20); padding: 2px 0 2px 18px; margin: 18px 0; font-style: italic; color: var(--wiki-ink-60); font-size: 14.5px; line-height: 1.65; }
+.wiki-body hr { border: none; border-top: 1px solid var(--wiki-ink-12); margin: 32px 0; }
+.wiki-body strong { font-weight: 600; color: var(--wiki-ink); }
+.wiki-body code { font-family: var(--wiki-font-mono, ui-monospace, monospace); font-size: 12px; background: var(--wiki-paper); padding: 1px 5px; color: var(--wiki-ink-60); }
+.wiki-body a { color: var(--wiki-root); }
+
+.prose-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.prose-table th { font-family: var(--wiki-font-mono, ui-monospace, monospace); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--wiki-ink-40); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--wiki-ink-12); }
+.prose-table td { padding: 10px 12px; vertical-align: top; border-bottom: 1px solid var(--wiki-ink-07); color: var(--wiki-ink-60); line-height: 1.5; }
+.prose-table tr:last-child td { border-bottom: none; }
+
+.wiki-callout { background: var(--wiki-paper); border: 1px solid var(--wiki-ink-12); padding: 14px 18px; margin: 18px 0; }
+.wiki-callout-label { font-family: var(--wiki-font-mono, ui-monospace, monospace); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--wiki-ink-40); margin-bottom: 6px; }
+.wiki-callout p:last-child { margin-bottom: 0; }
