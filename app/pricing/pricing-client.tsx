@@ -367,18 +367,16 @@ export function PricingClient({ currency }: { currency: "ngn" | "usd" }) {
             WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
           }}
         >
-          <motion.div
-            className="flex items-center gap-12"
+          <div
+            className="animate-marquee flex items-center gap-12"
             style={{ width: "max-content" }}
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
           >
             {[...clientLogos, ...clientLogos].map((src, i) => (
               <div key={i} className="relative h-8 w-28 shrink-0">
                 <Image src={src} alt="" fill className="object-contain grayscale opacity-50" sizes="112px" />
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 

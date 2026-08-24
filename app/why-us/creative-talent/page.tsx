@@ -9,10 +9,6 @@ import { useEffect, useRef, useState } from "react"
 import {
   motion,
   AnimatePresence,
-  useAnimationFrame,
-  useMotionValue,
-  useScroll,
-  useTransform,
   useInView,
 } from "framer-motion"
 import Image from "next/image"
@@ -235,6 +231,11 @@ function FloatingCard({ card }: { card: Card }) {
 }
 
 function CollageSection() {
+  const [isDesktop, setIsDesktop] = useState(false)
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 768)
+  }, [])
+
   return (
     <section
       style={{ backgroundColor: "#0B1F17", borderTop: "1px solid #1A332A" }}
@@ -265,9 +266,10 @@ function CollageSection() {
           </motion.h2>
         </motion.div>
 
-        {/* Desktop scattered collage */}
+        {/* Desktop scattered collage — only mounted when confirmed desktop to avoid
+            framer-motion infinite-loop animations running on hidden mobile elements */}
         <div className="hidden md:block relative" style={{ minHeight: 560 }}>
-          {CARDS.map((card, i) => (
+          {isDesktop && CARDS.map((card, i) => (
             <FloatingCard key={i} card={card} />
           ))}
         </div>
@@ -420,10 +422,6 @@ const CHECKLIST = [
 ]
 
 function ProcessSection() {
-  const imgRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: imgRef, offset: ["start end", "end start"] })
-  const imgY = useTransform(scrollYProgress, [0, 1], [24, -24])
-
   return (
     <section
       style={{ backgroundColor: "#0B1F17", borderTop: "1px solid #1A332A" }}
@@ -501,10 +499,9 @@ function ProcessSection() {
           <PillCTA href="/pricing">Start your subscription</PillCTA>
         </motion.div>
 
-        {/* Right — platform screenshot with parallax */}
-        <div ref={imgRef} className="lg:sticky lg:top-28">
+        {/* Right — platform screenshot */}
+        <div className="lg:sticky lg:top-28">
           <motion.div
-            style={{ y: imgY }}
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-80px" }}
@@ -661,9 +658,9 @@ function DisciplinesSection() {
               whileHover={{ scale: 1.015 }}
               transition={{ duration: 0.3, ease: BEZIER }}
             >
-              {/* Pulsing rings */}
+              {/* Pulsing rings — CSS animation, zero JS on scroll */}
               {[0, 1, 2].map((i) => (
-                <motion.div
+                <div
                   key={i}
                   className="absolute rounded-full pointer-events-none"
                   style={{
@@ -672,11 +669,8 @@ function DisciplinesSection() {
                     border: "1px solid rgba(214,255,92,0.1)",
                     top: "50%",
                     left: "50%",
-                    translateX: "-50%",
-                    translateY: "-50%",
+                    animation: `pulse-ring ${3 + i * 0.8}s ease-in-out ${i * 0.9}s infinite`,
                   }}
-                  animate={{ scale: [1, 1.07, 1], opacity: [0.35, 0.75, 0.35] }}
-                  transition={{ duration: 3 + i * 0.8, repeat: Infinity, ease: "easeInOut", delay: i * 0.9 }}
                 />
               ))}
 
@@ -807,14 +801,10 @@ function HassleFreeSection() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 7. CREATIVE SPECIALTIES HORIZONTAL SCROLL STRIP
-//    - useMotionValue drives translateX every frame via useAnimationFrame
-//    - isPaused ref toggles on mouse enter/leave — instant stop, no stutter on resume
-//    - each tile has independent hover state for scale + label reveal
 // ─────────────────────────────────────────────────────────────────────────────
 const STRIP_W   = 300   // tile width px
 const STRIP_H   = 380   // tile height px
-const STRIP_MR  = 16    // margin-right per tile (creates uniform gap including at loop boundary)
-const LOOP_W    = TALENT.length * (STRIP_W + STRIP_MR)   // = 5 × 316 = 1580 px
+const STRIP_MR  = 16    // margin-right per tile
 
 function StripTile({ src, specialty }: { src: string; specialty: string }) {
   const [hov, setHov] = useState(false)
@@ -862,34 +852,22 @@ function StripTile({ src, specialty }: { src: string; specialty: string }) {
 }
 
 function TalentStrip() {
-  const x        = useMotionValue(0)
-  const isPaused = useRef(false)
-  // 4 copies ensures seamless wrap — loop resets after exactly LOOP_W px
-  const tiles    = [...TALENT, ...TALENT, ...TALENT, ...TALENT]
-
-  useAnimationFrame((_, delta) => {
-    if (isPaused.current) return
-    let next = x.get() - delta * 0.055   // 55 px/s
-    if (next <= -LOOP_W) next += LOOP_W
-    x.set(next)
-  })
+  // 2 copies for seamless CSS marquee loop (translateX(-50%) lands on second copy = first)
+  const tiles = [...TALENT, ...TALENT]
 
   return (
     <div
       className="overflow-hidden"
-      onMouseEnter={() => { isPaused.current = true }}
-      onMouseLeave={() => { isPaused.current = false }}
       style={{
         maskImage:       "linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%)",
         WebkitMaskImage: "linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%)",
       }}
     >
-      {/* motion.div with x motion value — no other transforms needed */}
-      <motion.div style={{ x, display: "flex", width: "max-content" }}>
+      <div style={{ display: "flex", width: "max-content", animation: "marquee 28s linear infinite" }}>
         {tiles.map((t, i) => (
           <StripTile key={i} src={t.src} specialty={t.specialty} />
         ))}
-      </motion.div>
+      </div>
     </div>
   )
 }

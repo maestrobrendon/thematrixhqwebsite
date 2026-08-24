@@ -381,6 +381,18 @@
     animation: marquee 40s linear infinite;
   }
 
+  /* Careers ticker — CSS-only, no JS needed */
+  .careers-ticker {
+    animation: marquee 32s linear infinite;
+    will-change: transform;
+  }
+
+  /* Pulsing decorative rings — creative-talent page */
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.35; transform: translate(-50%, -50%) scale(1); }
+    50%       { opacity: 0.75; transform: translate(-50%, -50%) scale(1.07); }
+  }
+
   /* Premium backdrop blur utilities */
   .glass-effect {
     background: rgba(255, 255, 255, 0.8);
@@ -401,6 +413,15 @@
 
   .transition-slow {
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* ── Mobile: kill backdrop-filter on the nav — too GPU-heavy on iOS ── */
+@media (max-width: 767px) {
+  .nav-header-bar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: #0B1F17 !important;
   }
 }
 
@@ -479,12 +500,16 @@
 .img-zoom:hover img,
 .img-zoom:hover .next-image { transform: scale(1.04); }
 
-/* Compositor layer hints for GSAP/Framer animated elements */
-.hero-mosaic-tile,
-.portfolio-tile,
-.feature-card,
-.card-lift {
-  will-change: transform;
+/* Compositor layer hints — desktop+mouse only.
+   On mobile, will-change: transform promotes every element to its own GPU
+   layer simultaneously, exhausting VRAM and crashing iOS Safari tabs. */
+@media (hover: hover) and (pointer: fine) {
+  .hero-mosaic-tile,
+  .portfolio-tile,
+  .feature-card,
+  .card-lift {
+    will-change: transform;
+  }
 }
 
 /* ── NOISE OVERLAY — subtle grain texture on full-bleed image sections ── */
@@ -514,7 +539,7 @@
   .hero-mosaic-tile,
   .portfolio-tile,
   .feature-card,
-  .card-lift { will-change: auto; }
+  .card-lift { will-change: auto !important; }
 }
 
 /* ══════════════════════════════════════════
