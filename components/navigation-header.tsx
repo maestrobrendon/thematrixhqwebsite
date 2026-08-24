@@ -223,10 +223,25 @@ export function NavigationHeader() {
     setMenuOpen(false); setSvcOpen(false); setWhyOpen(false)
   }, [pathname])
 
-  // ── Body scroll lock ───────────────────────────────────────────────────────
+  // ── Body scroll lock (iOS-safe) ────────────────────────────────────────────
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : ""
-    return () => { document.body.style.overflow = "" }
+    if (menuOpen) {
+      const scrollY = window.scrollY
+      document.body.style.position = "fixed"
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.width = "100%"
+    } else {
+      const top = document.body.style.top
+      document.body.style.position = ""
+      document.body.style.top = ""
+      document.body.style.width = ""
+      if (top) window.scrollTo(0, -parseInt(top, 10))
+    }
+    return () => {
+      document.body.style.position = ""
+      document.body.style.top = ""
+      document.body.style.width = ""
+    }
   }, [menuOpen])
 
   const isActive      = (href: string) =>
@@ -285,14 +300,14 @@ export function NavigationHeader() {
           NAV BAR
       ═════════════════════════════════════════════════════════════════════ */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 w-full"
+        className="nav-header-bar fixed top-0 left-0 right-0 z-50 w-full"
         style={{
-          backgroundColor:   scrolled ? "#0B1F17" : "rgba(11,31,23,0.45)",
-          backdropFilter:    scrolled ? "none"    : "blur(14px)",
-          WebkitBackdropFilter: scrolled ? "none" : "blur(14px)",
+          backgroundColor:   scrolled ? "#0B1F17" : "rgba(11,31,23,0.6)",
+          backdropFilter:    "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
           borderBottom:      "1px solid",
           borderBottomColor: scrolled ? "rgba(26,51,42,1)" : "rgba(26,51,42,0.4)",
-          transition:        "background-color 350ms ease, backdrop-filter 350ms ease, border-color 350ms ease",
+          transition:        "background-color 350ms ease, border-color 350ms ease",
         }}
       >
         <div className="max-w-screen-2xl mx-auto px-6 md:px-10 lg:px-14 h-17 flex items-center justify-between gap-8">

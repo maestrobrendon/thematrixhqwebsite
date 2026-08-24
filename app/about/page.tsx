@@ -140,12 +140,9 @@ function HeroSection() {
           transition={{ duration: 1, delay: 1 }}
           className="absolute bottom-12 left-1/2 -translate-x-1/2"
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
+          <div className="animate-bounce">
             <ChevronDown className="w-8 h-8 text-matrix-text-muted" />
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

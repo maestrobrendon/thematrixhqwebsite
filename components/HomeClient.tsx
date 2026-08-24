@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo } from "react"
-import { motion, AnimatePresence, useScroll, useTransform, useAnimate, useInView } from "framer-motion"
+import { useState, useEffect, useMemo } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { NavigationHeader } from "@/components/navigation-header"
 import { Footer } from "@/components/footer"
 import { ScrollReveal } from "@/components/scroll-reveal"
@@ -156,11 +156,22 @@ export default function HomeClient({ mosaicImages, differenceImage, bottleneckBg
     ? pexelsUrl(differenceImage, "large2x")
     : FALLBACK_DIFFERENCE_IMG
 
-  const bottleneckBgImageUrl = bottleneckBgImage ? pexelsUrl(bottleneckBgImage, "large2x") : FALLBACK_BOTTLENECK_BG
-  const talentBgImageUrl = talentBgImage ? pexelsUrl(talentBgImage, "large2x") : FALLBACK_TALENT_BG
-  const finalCtaBgImageUrl = finalCtaBgImage ? pexelsUrl(finalCtaBgImage, "large2x") : FALLBACK_FINAL_CTA_BG
+  const bottleneckBgImageUrl = bottleneckBgImage ? pexelsUrl(bottleneckBgImage, "large") : FALLBACK_BOTTLENECK_BG
+  const talentBgImageUrl = talentBgImage ? pexelsUrl(talentBgImage, "large") : FALLBACK_TALENT_BG
+  const finalCtaBgImageUrl = finalCtaBgImage ? pexelsUrl(finalCtaBgImage, "large") : FALLBACK_FINAL_CTA_BG
 
   useEffect(() => {
+    const isMobile = window.innerWidth < 1024
+    // On mobile: skip GSAP entirely — ScrollTrigger instances and scrub
+    // animations are a leading cause of iOS Safari tab crashes.
+    if (isMobile) {
+      // Make hidden elements visible immediately (GSAP normally does this)
+      document.querySelectorAll(
+        '.hero-eyebrow,.hero-headline,.hero-subhead,.hero-ctas,.hero-value-strip'
+      ).forEach((el) => { (el as HTMLElement).style.opacity = '1' })
+      return
+    }
+
     const ctx = gsap.context(() => {
 
       // ── HERO ENTRANCE TIMELINE ──
@@ -199,11 +210,9 @@ export default function HomeClient({ mosaicImages, differenceImage, bottleneckBg
       document.querySelectorAll('section h2, section h3').forEach((el) => {
         gsap.fromTo(el,
           { opacity: 0, y: 28, clipPath: 'inset(0 0 20% 0)' },
-          {
-            opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)',
+          { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)',
             duration: 0.75, ease: 'power4.out',
-            scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-          })
+            scrollTrigger: { trigger: el, start: 'top 88%', once: true } })
       })
 
       // ── FEATURE CARDS ──
@@ -222,9 +231,7 @@ export default function HomeClient({ mosaicImages, differenceImage, bottleneckBg
           duration: 1.8,
           ease: 'power2.out',
           scrollTrigger: { trigger: el, start: 'top 85%', once: true },
-          onUpdate: () => {
-            el.textContent = `${Math.round(obj.value)}${suffix}`
-          },
+          onUpdate: () => { el.textContent = `${Math.round(obj.value)}${suffix}` },
         })
       })
 
@@ -234,11 +241,9 @@ export default function HomeClient({ mosaicImages, differenceImage, bottleneckBg
       // ── TESTIMONIALS ──
       revealUp('.testimonial-card', { stagger: 0.12, start: 'top 85%' })
 
-      // ── PARALLAX on BeyondSection image ──
+      // ── PARALLAX ──
       const diffImg = document.querySelector('.difference-section-image')
       if (diffImg) parallaxY(diffImg, -12)
-
-      // ── PARALLAX on full-bleed section backgrounds ──
       document.querySelectorAll('[data-parallax-bg="true"]').forEach((el) => {
         parallaxY(el, -15)
       })
@@ -317,6 +322,14 @@ function MosaicTile({ img: src, label, priority }: { img: string; label: string;
 }
 
 function HeroSection({ colsData }: { colsData: ColsData }) {
+  // Only mount the animated desktop mosaic after confirming we're on desktop.
+  // CSS display:none does NOT stop framer-motion's rAF loops — so we must
+  // avoid mounting these elements on mobile entirely.
+  const [isDesktop, setIsDesktop] = useState(false)
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 1024)
+  }, [])
+
   return (
     <section
       style={{ backgroundColor: "#0B1F17" }}
@@ -399,16 +412,41 @@ function HeroSection({ colsData }: { colsData: ColsData }) {
         </div>
       </div>
 
-      {/* ── Mobile mosaic ── */}
+      {/* ── Mobile mosaic — static grid, no JS animation (GPU budget) ── */}
       <div className="lg:hidden relative w-full px-4 pb-10">
         <div
-          className="flex gap-2 overflow-hidden rounded-2xl"
-          style={{ height: MOBILE_MOSAIC_H }}
+          className="grid gap-2 rounded-2xl overflow-hidden"
+          style={{ gridTemplateColumns: "repeat(3, 1fr)", height: MOBILE_MOSAIC_H }}
+        >
+          {colsData.map((col, ci) => (
+            <div key={ci} className="flex flex-col gap-2 overflow-hidden" style={{ height: MOBILE_MOSAIC_H }}>
+              {col.map((tile, ti) => (
+                <div
+                  key={ti}
+                  style={{ flexGrow: tile.grow, minHeight: 0 }}
+                >
+                  <MosaicTile img={tile.img} label={tile.label} priority={ci === 0 && ti === 0} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div
+          className="absolute bottom-10 left-4 right-4 rounded-b-2xl h-20 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, transparent, #0B1F17)" }}
+        />
+      </div>
+
+      {/* ── Desktop mosaic — only mounted when confirmed desktop ── */}
+      {isDesktop && (
+        <div
+          className="hidden lg:flex gap-2 shrink-0 overflow-hidden"
+          style={{ width: "52%", height: "100vh" }}
         >
           {colsData.map((col, ci) => {
             const doubled = [...col, ...col]
             return (
-              <div key={ci} className="flex-1 overflow-hidden" style={{ height: MOBILE_MOSAIC_H }}>
+              <div key={ci} className="flex-1 overflow-hidden" style={{ height: "100vh" }}>
                 <motion.div
                   className="flex flex-col"
                   animate={{ y: "-50%" }}
@@ -422,11 +460,7 @@ function HeroSection({ colsData }: { colsData: ColsData }) {
                   {doubled.map((tile, ti) => (
                     <div
                       key={ti}
-                      style={{
-                        height: (tile.grow / 100) * MOBILE_MOSAIC_H,
-                        flexShrink: 0,
-                        marginBottom: 6,
-                      }}
+                      style={{ height: `${tile.grow}vh`, flexShrink: 0, marginBottom: 8 }}
                     >
                       <MosaicTile img={tile.img} label={tile.label} priority={ti === 0} />
                     </div>
@@ -436,48 +470,7 @@ function HeroSection({ colsData }: { colsData: ColsData }) {
             )
           })}
         </div>
-        <div
-          className="absolute bottom-10 left-4 right-4 rounded-b-2xl h-20 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, transparent, #0B1F17)" }}
-        />
-      </div>
-
-      {/* ── Desktop mosaic ── */}
-      <div
-        className="hidden lg:flex gap-2 shrink-0 overflow-hidden"
-        style={{ width: "52%", height: "100vh" }}
-      >
-        {colsData.map((col, ci) => {
-          const doubled = [...col, ...col]
-          return (
-            <div key={ci} className="flex-1 overflow-hidden" style={{ height: "100vh" }}>
-              <motion.div
-                className="flex flex-col"
-                animate={{ y: "-50%" }}
-                transition={{
-                  duration: COL_DURATIONS[ci],
-                  repeat: Infinity,
-                  ease: "linear",
-                  delay: COL_DELAYS[ci],
-                }}
-              >
-                {doubled.map((tile, ti) => (
-                  <div
-                    key={ti}
-                    style={{
-                      height: `${tile.grow}vh`,
-                      flexShrink: 0,
-                      marginBottom: 8,
-                    }}
-                  >
-                    <MosaicTile img={tile.img} label={tile.label} priority={ti === 0} />
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-          )
-        })}
-      </div>
+      )}
     </section>
   )
 }
@@ -500,18 +493,9 @@ const EDGE_MASK = {
 } as const
 
 function TrustBarSection() {
-  const ref = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
-
-  const x1 = useTransform(scrollYProgress, [0, 1], [0, -150])
-  const x2 = useTransform(scrollYProgress, [0, 1], [0, 150])
-
+  // CSS-only marquee — no useScroll/useTransform/scroll listeners on mobile
   return (
     <section
-      ref={ref}
       style={{ backgroundColor: "#F4F1E8" }}
       className="py-12 md:py-16 text-center overflow-hidden"
     >
@@ -522,11 +506,8 @@ function TrustBarSection() {
         Trusted by ambitious founders and visionary brands
       </p>
 
-      <div className="mb-4" style={EDGE_MASK}>
-        <motion.div
-          className="flex items-center gap-10"
-          style={{ x: x1, width: "max-content" }}
-        >
+      <div className="mb-4 overflow-hidden" style={EDGE_MASK}>
+        <div className="animate-marquee flex items-center gap-10" style={{ width: "max-content" }}>
           {row1Logos.map((src, i) => (
             <div key={i} className="trust-bar-logo relative h-8 w-32 shrink-0">
               <Image
@@ -539,13 +520,13 @@ function TrustBarSection() {
               />
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
 
-      <div style={EDGE_MASK}>
-        <motion.div
-          className="flex items-center gap-10"
-          style={{ x: x2, width: "max-content" }}
+      <div className="overflow-hidden" style={EDGE_MASK}>
+        <div
+          className="animate-marquee flex items-center gap-10"
+          style={{ width: "max-content", animationDirection: "reverse" }}
         >
           {row2Logos.map((src, i) => (
             <div key={i} className="trust-bar-logo relative h-8 w-32 shrink-0">
@@ -559,7 +540,7 @@ function TrustBarSection() {
               />
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )
@@ -753,18 +734,6 @@ const featureCards: Array<{
 ]
 
 function FeatureCardsSection() {
-  const [headlineRef, animateHeadline] = useAnimate<HTMLHeadingElement>()
-  const isInView = useInView(headlineRef, { once: true, margin: "-100px" })
-
-  useEffect(() => {
-    if (!isInView) return
-    animateHeadline(
-      headlineRef.current,
-      { backgroundPosition: "100% 0%" },
-      { duration: 1.4, ease: BEZIER },
-    )
-  }, [isInView, animateHeadline, headlineRef])
-
   return (
     <section
       style={{ backgroundColor: "#0B1F17", borderTop: "1px solid #1A332A" }}
@@ -783,19 +752,12 @@ function FeatureCardsSection() {
         </motion.p>
 
         <h2
-          ref={headlineRef}
           style={{
-            backgroundImage:
-              "linear-gradient(90deg, #7C8C82 0%, #ffffff 50%, #7C8C82 100%)",
-            backgroundSize: "200% 100%",
-            backgroundPosition: "0% 0%",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
+            color: "#ffffff",
             fontWeight: 600,
             lineHeight: 1.15,
           }}
-          className="text-[2rem] md:text-[2.6rem] mb-12 md:mb-16 max-w-2xl mx-auto"
+          className="text-[2rem] md:text-[2.6rem] mb-12 md:mb-16 max-w-2xl mx-auto text-white"
         >
           Real craft. Smarter systems.
           <br />

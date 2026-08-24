@@ -427,18 +427,10 @@ function ClientLogosSection({ logos }: { logos: string[] }) {
           </p>
         </motion.div>
 
-        {/* Auto-scrolling Logos */}
+        {/* Auto-scrolling Logos — CSS animation, no JS loop */}
         <div className="relative">
           <div className="flex overflow-hidden">
-            <motion.div
-              animate={{ x: [0, -1400] }}
-              transition={{
-                duration: 30,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              className="flex gap-12 md:gap-16 items-center whitespace-nowrap"
-            >
+            <div className="animate-marquee flex gap-12 md:gap-16 items-center whitespace-nowrap">
               {doubledLogos.map((logo, i) => (
                 <div
                   key={i}
@@ -452,7 +444,7 @@ function ClientLogosSection({ logos }: { logos: string[] }) {
                   />
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
