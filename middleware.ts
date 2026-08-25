@@ -10,11 +10,18 @@ function wikiSecret() {
 
 export async function middleware(req: NextRequest) {
   const hostname = req.headers.get("host") ?? ""
-  const isWiki = hostname.startsWith("wiki.")
+  const { pathname } = req.nextUrl
 
+  // brendon.thematrixhq.com/* → /brendon/* (same content as /brendon)
+  if (hostname.startsWith("brendon.")) {
+    const rewriteUrl = req.nextUrl.clone()
+    rewriteUrl.pathname = `/brendon${pathname === "/" ? "" : pathname}`
+    return NextResponse.rewrite(rewriteUrl)
+  }
+
+  const isWiki = hostname.startsWith("wiki.")
   if (!isWiki) return NextResponse.next()
 
-  const { pathname } = req.nextUrl
   const isPublic = WIKI_PUBLIC.some((p) => pathname.startsWith(p))
 
   // Auth check for protected wiki paths
