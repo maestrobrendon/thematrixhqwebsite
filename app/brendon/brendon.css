@@ -1,0 +1,84 @@
+/* Design tokens for the /brendon portfolio rebuild.
+   Values sourced from the Figma inspector screenshots + reference GIFs where exact;
+   values marked PLACEHOLDER are best-effort eyeballed from screenshots (no exact hex
+   available) and safe to nudge later. */
+
+.brendon-scope {
+  --brendon-font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --brendon-font-mono: var(--font-mono), ui-monospace, monospace;
+  --brendon-font-hand: var(--font-hand), cursive;
+  --brendon-font-body: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+
+  /* Project card palette (cycles per card) — exact hex read from Project_1-4 SVG exports */
+  --brendon-cyan: #36c5f0;
+  --brendon-black: #111212;
+  --brendon-gold: #ecb22e;
+  --brendon-magenta: #e01e5a;
+
+  /* Skill pill accents */
+  --brendon-green: #3fae6a;      /* PLACEHOLDER: Art Direction pill */
+  --brendon-pink: #ec4899;       /* PLACEHOLDER: Design Systems pill */
+  --brendon-coral: #d97757;      /* Header social-link text */
+
+  /* Sticky note colors */
+  --brendon-note-pink: #f6c9e0;      /* PLACEHOLDER */
+  --brendon-note-cream: #fdf6e3;     /* PLACEHOLDER */
+  --brendon-note-blue: #cdeaf6;      /* PLACEHOLDER */
+  --brendon-note-white: #fbfbf9;
+
+  --brendon-ink: #14140f;        /* near-black text */
+  --brendon-muted: #6b6b63;      /* muted gray body text */
+
+  font-family: var(--brendon-font-body);
+  color: var(--brendon-ink);
+}
+
+.brendon-scope .font-display {
+  font-family: var(--brendon-font-display);
+}
+
+.brendon-scope .font-mono-accent {
+  font-family: var(--brendon-font-mono);
+}
+
+.brendon-scope .font-hand {
+  font-family: var(--brendon-font-hand);
+}
+
+/* Corner "selection handle" chrome — hero wordmark + project images */
+.brendon-scope .selection-frame {
+  position: relative;
+}
+.brendon-scope .selection-frame::before,
+.brendon-scope .selection-frame::after,
+.brendon-scope .selection-frame .handle {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--brendon-note-blue);
+  border: 1.5px solid #1a8fb8;
+  z-index: 5;
+}
+.brendon-scope .selection-frame::before { top: -4px; left: -4px; }
+.brendon-scope .selection-frame::after { top: -4px; right: -4px; }
+.brendon-scope .selection-frame .handle-bl { bottom: -4px; left: -4px; }
+.brendon-scope .selection-frame .handle-br { bottom: -4px; right: -4px; }
+
+/* Sticky note base */
+.brendon-scope .sticky-note {
+  border: 1.25px solid rgba(0, 0, 0, 0.75);
+  border-radius: 5px;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* Ruler tick bar */
+.brendon-scope .ruler-track {
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(20, 20, 15, 0.35) 0,
+    rgba(20, 20, 15, 0.35) 1px,
+    transparent 1px,
+    transparent 100px
+  );
+}
