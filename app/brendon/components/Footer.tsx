@@ -13,7 +13,7 @@ const socials = [
 export function Footer() {
   return (
     <footer id="contact" className="bg-[var(--brendon-ink)] text-white">
-      <div className="max-w-3xl mx-auto px-6 py-24 md:py-32 text-center">
+      <div className="max-w-3xl mx-auto px-6 py-16 md:py-20 text-center">
         <motion.span
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

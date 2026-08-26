@@ -61,7 +61,7 @@ function SkillBar({ name, percentage, delay }: { name: string; percentage: numbe
 
 export function SkillsExpertise() {
   return (
-    <section className="py-24 md:py-32 px-6 bg-white border-t border-black/10">
+    <section className="py-16 md:py-20 px-6 bg-white border-t border-black/10">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

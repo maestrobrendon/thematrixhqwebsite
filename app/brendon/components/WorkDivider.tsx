@@ -12,7 +12,7 @@ export function WorkDivider() {
   const x = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"])
 
   return (
-    <section ref={ref} className="relative py-16 md:py-24 overflow-hidden bg-white flex flex-col items-center justify-center">
+    <section ref={ref} className="relative py-8 md:py-12 overflow-hidden bg-white flex flex-col items-center justify-center">
       <motion.span
         aria-hidden
         style={{ x }}

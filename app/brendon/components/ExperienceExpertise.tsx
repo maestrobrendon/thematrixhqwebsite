@@ -59,7 +59,7 @@ export function ExperienceExpertise() {
   const [expanded, setExpanded] = useState<number | null>(0)
 
   return (
-    <section className="py-24 md:py-32 px-6 bg-white border-t border-black/10">
+    <section className="py-16 md:py-20 px-6 bg-white border-t border-black/10">
       <div className="max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

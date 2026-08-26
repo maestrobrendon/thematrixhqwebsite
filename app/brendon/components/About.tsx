@@ -5,19 +5,20 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { StickyNote } from "./StickyNote"
 import { aboutAssets } from "../lib/assets"
+import { CheckerIcon, StarburstIcon, EyeIcon, DotsIcon } from "./SkillIcons"
 
 const skills = [
-  { label: "Brand Identity", icon: aboutAssets.brandIdentityPng, bg: "#f2b705", text: "#1a1400" },
-  { label: "Art Direction", icon: aboutAssets.artDirectionIconPng, bg: "#3fae6a", text: "#ffffff" },
-  { label: "Design Systems", icon: aboutAssets.designSystemPng, bg: "#ec1561", text: "#ffffff" },
-  { label: "Motion Design", icon: aboutAssets.motionDesignIconSvg, bg: "#3fc6f0", text: "#04222b" },
+  { label: "Brand Identity", Icon: CheckerIcon, bg: "#f2b705", text: "#1a1400" },
+  { label: "Art Direction", Icon: StarburstIcon, bg: "#3fae6a", text: "#ffffff" },
+  { label: "Design Systems", Icon: EyeIcon, bg: "#ec1561", text: "#ffffff" },
+  { label: "Motion Design", Icon: DotsIcon, bg: "#3fc6f0", text: "#04222b" },
 ]
 
 export function About() {
   const boundsRef = useRef<HTMLDivElement>(null)
 
   return (
-    <section id="about" ref={boundsRef} className="relative py-24 md:py-32 px-6 bg-white overflow-hidden">
+    <section id="about" ref={boundsRef} className="relative py-16 md:py-20 px-6 bg-white overflow-hidden">
       <div className="max-w-5xl mx-auto relative">
         {/* Polaroid — sits in the outer wide column so it never overlaps the text */}
         <motion.div
@@ -103,7 +104,7 @@ export function About() {
                 <span className="flex items-center px-4 py-2.5" style={{ backgroundColor: skill.bg, color: skill.text }}>
                   {skill.label}
                 </span>
-                <Image src={skill.icon} alt="" width={40} height={40} className="w-10 h-10 shrink-0 object-cover" />
+                <skill.Icon className="w-10 h-10 shrink-0" />
               </motion.div>
             ))}
           </div>

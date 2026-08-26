@@ -1,6 +1,7 @@
 import { Hero } from "./components/Hero"
 import { About } from "./components/About"
 import { FeaturedWork } from "./components/FeaturedWork"
+import { AllWork } from "./components/AllWork"
 import { WorkDivider } from "./components/WorkDivider"
 import { Perspective } from "./components/Perspective"
 import { SkillsExpertise } from "./components/SkillsExpertise"
@@ -13,6 +14,7 @@ export default function BrendonPortfolioPage() {
       <Hero />
       <About />
       <FeaturedWork />
+      <AllWork />
       <WorkDivider />
       <Perspective />
       <SkillsExpertise />

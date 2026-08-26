@@ -12,9 +12,9 @@ export function FeaturedWork() {
   const boundsRef = useRef<HTMLDivElement>(null)
 
   return (
-    <section id="work" ref={boundsRef} className="relative py-24 md:py-32 px-6 bg-white">
+    <section id="work" ref={boundsRef} className="relative pt-14 pb-12 md:pt-16 md:pb-16 px-6 bg-white">
       <div className="max-w-5xl mx-auto">
-        <div className="relative text-center mb-14">
+        <div className="relative text-center mb-8">
           <motion.p
             initial={{ opacity: 0, y: -8 }}
             whileInView={{ opacity: 1, y: 0 }}

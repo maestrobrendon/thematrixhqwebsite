@@ -69,15 +69,23 @@ function Panel({ project, index, n, scrollYProgress }: { project: Project; index
   // Slide up to cover, rather than fade — two overlapping semi-transparent panels
   // would double-expose their text/image content, which a full-bleed slide avoids
   // since the incoming panel is physically off-screen until it arrives.
-  // Card 0 is visible from the start, so its range can't collapse to a single point.
-  const rampStart = index === 0 ? 0 : Math.max(start - ramp, 0)
-  const rampEnd = index === 0 ? 0.0001 : start
+  // useTransform needs strictly-increasing input points even when index 0's
+  // result below goes unused — start can't equal rampStart for card 0.
+  const rampStart = Math.max(start - ramp, 0)
+  const rampEnd = Math.max(start, rampStart + 0.0001)
   const y = useTransform(scrollYProgress, [rampStart, rampEnd], ["100%", "0%"])
+  // Card 0 must render in place unconditionally: scrollYProgress is clamped to
+  // exactly 0 before the tall stacking container scrolls into tracking range, and
+  // 0 is also this transform's own lower bound, so it would otherwise sit
+  // translated fully off-screen (y: 100%) for the entire scroll distance between
+  // the heading and the container's top reaching the viewport top — a large dead
+  // gap. Card 0 has nothing to slide in from; it's just always there.
+  const finalY = index === 0 ? "0%" : y
 
   return (
     <motion.div
       data-panel-index={index}
-      style={{ y, zIndex: index }}
+      style={{ y: finalY, zIndex: index }}
       className="absolute inset-0 flex flex-col"
     >
       {/* Aspect-locked so left/top percentages always match the source PNG's own
@@ -153,7 +161,7 @@ export function ProjectStack() {
   const n = projects.length
 
   return (
-    <div ref={containerRef} data-project-stack className="relative mt-16" style={{ height: `${n * 90}vh` }}>
+    <div ref={containerRef} data-project-stack className="relative mt-4" style={{ height: `${n * 90}vh` }}>
       <div className="sticky top-20 h-[70vh] md:h-[75vh] w-full overflow-hidden shadow-lg">
         {projects.map((project, i) => (
           <Panel key={project.slug} project={project} index={i} n={n} scrollYProgress={scrollYProgress} />
