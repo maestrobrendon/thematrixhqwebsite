@@ -114,13 +114,13 @@ const behanceProjects = [
     title: "ARCLLY - Grocery Branding",
     image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764280363/ifdv28cltsgypa7nhhuv.jpg",
     link: "https://www.behance.net/gallery/209998445/ARCLLY-Grocery-Branding",
-    categories: ["Brand Identity", "Design System", "Motion"],
+    categories: ["Brand Identity", "Design System"],
   },
   {
     title: "Stixs and Codes - Kids Tech Academy",
     image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764279109/ryrwpj24gnfju87pbkbs.jpg",
     link: "https://www.behance.net/gallery/225121059/Stix-Codes-Branding-for-a-Kids-Tech-Academy",
-    categories: ["Brand Identity", "Design System", "Motion"],
+    categories: ["Brand Identity", "Design System"],
   },
   {
     title: "Letspot Token - Crypto Jackpot",

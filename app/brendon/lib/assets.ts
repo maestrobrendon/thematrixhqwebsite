@@ -54,11 +54,25 @@ export const projectCovers = {
 
 // Real card-background art (flat card color + the folded tab-notch cutout, positioned
 // at that card's own horizontal slot) — used as-is as each panel's full-bleed background.
+// magenta is served locally: the Cloudinary original was exported with its tab notch
+// 160px closer to the canvas top than cards 1-3, which broke the shared absolute-pixel
+// alignment the stacking effect depends on — see /public/brendon/project-4-bg.png,
+// which is the same art with 160px of transparent padding added back on top.
 export const projectCardBg = {
   cyan: cld("Project_1_lvsteg"),
   black: cld("Project_2_csupoa"),
   gold: cld("Project_3_oeml0j"),
-  magenta: cld("Project_4_ohyh0u"),
+  magenta: "/brendon/project-4-bg.png",
+}
+
+// Mobile-only card art: a single top-right corner cut, no multi-card tab-slot
+// system (there's no room to accumulate a tab row at phone widths) — all four
+// exports share one uniform ~716x1385 canvas and corner-cut position.
+export const projectCardBgMobile = {
+  cyan: cld("projext_1-_mobile_mj1gh1"),
+  black: cld("Project_2_mobile_z1sdrb"),
+  gold: cld("Project_3_mobile_tiqwgb"),
+  magenta: cld("Project_4_mobile_n3xpyn"),
 }
 
 export const perspectiveAssets = {

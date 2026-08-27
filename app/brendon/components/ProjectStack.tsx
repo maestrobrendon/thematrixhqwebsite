@@ -5,7 +5,7 @@ import Image from "next/image"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight, ImageIcon } from "lucide-react"
 import { projects, colorSchemes, type Project } from "../lib/projects"
-import { projectCardBg } from "../lib/assets"
+import { projectCardBg, projectCardBgMobile } from "../lib/assets"
 
 const APPEAR_RAMP = 0.3 // fraction of each project's own scroll dwell spent fading in
 
@@ -17,7 +17,7 @@ const NATURAL_ASPECT: Record<Project["color"], string> = {
   cyan: "3440 / 2000",
   black: "3440 / 2000",
   gold: "3440 / 2000",
-  magenta: "3440 / 1776",
+  magenta: "3440 / 1936",
 }
 const SLOT_CENTER_FRAC = [0.0756, 0.314, 0.552, 0.797]
 const SLOT_WIDTH_FRAC = 0.151
@@ -28,8 +28,14 @@ const TAB_TOP_FRAC: Record<Project["color"], number> = {
   cyan: 170 / 2000,
   black: 170 / 2000,
   gold: 170 / 2000,
-  magenta: 170 / 1776,
+  magenta: 170 / 1936,
 }
+
+// Mobile art is a single top-right corner cut, not the multi-card tab-slot
+// system above — there's no room to accumulate a tab row at phone widths, so
+// each card is just its own full-bleed background with no peeking. All four
+// exports share this canvas (~716x1385, negligible per-card variance).
+const MOBILE_ASPECT = "716 / 1385"
 
 function TagChip({ label, bg, text }: { label: string; bg: string; text: string }) {
   return (
@@ -88,11 +94,25 @@ function Panel({ project, index, n, scrollYProgress }: { project: Project; index
       style={{ y: finalY, zIndex: index }}
       className="absolute inset-0 flex flex-col"
     >
+      {/* Mobile: a plain corner-cut card, no tab-slot row (no room for one at
+          phone widths) — swapped in below md, where the desktop version below
+          is hidden. */}
+      <div className="relative w-full shrink-0 md:hidden" style={{ aspectRatio: MOBILE_ASPECT }}>
+        <Image
+          src={projectCardBgMobile[project.color]}
+          alt=""
+          fill
+          className="object-contain object-top pointer-events-none select-none"
+          sizes="100vw"
+          priority={index === 0}
+        />
+      </div>
+
       {/* Aspect-locked so left/top percentages always match the source PNG's own
           pixel fractions, regardless of the panel's rendered size — and left
           genuinely transparent (no fallback fill) so earlier cards' tabs, sitting
           behind at lower z-index, keep peeking through outside this card's slot. */}
-      <div className="relative w-full shrink-0" style={{ aspectRatio: NATURAL_ASPECT[project.color] }}>
+      <div className="relative hidden w-full shrink-0 md:block" style={{ aspectRatio: NATURAL_ASPECT[project.color] }}>
         <Image
           src={projectCardBg[project.color]}
           alt=""
@@ -103,7 +123,7 @@ function Panel({ project, index, n, scrollYProgress }: { project: Project; index
         />
 
         <div
-          className="absolute flex items-center px-3 text-[11px] font-bold uppercase tracking-widest"
+          className="absolute flex items-center justify-center px-3 text-[11px] font-bold uppercase tracking-widest"
           style={{
             left: `${(SLOT_CENTER_FRAC[index] - SLOT_WIDTH_FRAC / 2) * 100}%`,
             width: `${SLOT_WIDTH_FRAC * 100}%`,
