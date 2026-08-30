@@ -1,5 +1,34 @@
 "use client"
 
+/**
+ * Ported 3D hero — a procedural Three.js moss/root scene (adapted from the
+ * "Sylva — Living Green" reference build), re-skinned with Brendon's own
+ * copy and links. The heavy scene (shaders, geometry generation, dock nav,
+ * liquid-metal buttons) lives as a self-contained static page at
+ * /public/brendon/hero-scene.html and is mounted here via a same-origin
+ * iframe, exactly like the original catalog's LandingPageFrame pattern —
+ * that keeps its DOM/CSS/canvas fully isolated from the rest of the app.
+ *
+ * The previous sky-photo hero (wordmark, ruler, floating tags) is preserved
+ * below as HeroSkyLegacy — unused, but left in place as a fail-safe. To
+ * revert: swap `export function Hero()` back to the block below and drop
+ * this iframe version.
+ */
+export function Hero() {
+  return (
+    <section className="relative h-svh overflow-hidden">
+      <iframe
+        src="/brendon/hero-scene.html"
+        title="Brendon Oleghe — Multidisciplinary Designer"
+        loading="eager"
+        className="absolute inset-0 h-full w-full border-0"
+      />
+    </section>
+  )
+}
+
+/* ─── HeroSkyLegacy — the original sky-photo hero, kept as a fail-safe ───
+
 import { useRef, type MouseEvent } from "react"
 import Image from "next/image"
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
@@ -86,7 +115,7 @@ function HeroTag({ tag }: { tag: Tag }) {
   )
 }
 
-export function Hero() {
+export function HeroSkyLegacy() {
   const sectionRef = useRef<HTMLDivElement>(null)
 
   // Only the ruler tracks the cursor — everything else in the hero stays put.
@@ -119,7 +148,7 @@ export function Hero() {
 
       {/* Floating avatar bubbles — percentage-positioned so they hold their
           relationship to the wordmark at any viewport size. z-20 so they sit
-          in front of the wordmark, which reads as sitting "behind" the canvas. */}
+          in front of the wordmark, which reads as sitting "behind" the canvas. }
       <div className="absolute z-20 left-[10%] top-[32%] hidden sm:block -translate-x-1/2 -translate-y-1/2">
         <div className="w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-white shadow-md">
           <Image src={heroAssets.avatarLeft} alt="" width={44} height={44} className="w-full h-full object-cover" />
@@ -132,26 +161,27 @@ export function Hero() {
       </div>
 
       {/* Floating draggable tags — hidden on touch/mobile. Static in place;
-          only the ruler bar tracks the cursor. z-20, same reason as the avatars. */}
+          only the ruler bar tracks the cursor. z-20, same reason as the avatars. }
       {tags.map((tag) => (
         <HeroTag key={tag.key} tag={tag} />
       ))}
 
-      {/* z-0: the wordmark inside this column must render behind the tags/avatars above. */}
-      <div className="relative z-0 h-full flex flex-col items-center justify-center px-6 text-center">
-        <LiveClock className="font-mono-accent text-xs text-black/60 mb-6" />
+      {/* z-0: the wordmark inside this column must render behind the tags/avatars above. }
+      <div className="relative z-0 h-full flex flex-col items-center justify-center px-4 md:px-6 text-center">
+        <LiveClock className="font-mono-accent text-sm text-black/60 mb-6" />
 
-        {/* "my name is" handwritten label */}
+        {/* "my name is" handwritten label }
         <motion.p
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="font-hand text-2xl text-black/70 -mb-2 -rotate-2"
+          className="font-hand text-black/70 -mb-2 -rotate-2"
+          style={{ fontSize: "clamp(1.75rem, 6vw, 2.25rem)" }}
         >
           my name is
         </motion.p>
 
-        {/* Wordmark */}
+        {/* Wordmark }
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -167,7 +197,7 @@ export function Hero() {
           />
           <h1
             className="font-display tracking-tight text-(--brendon-ink)"
-            style={{ fontSize: "clamp(2.75rem, 8vw, 6.5rem)" }}
+            style={{ fontSize: "clamp(2.75rem, 12.6vw, 6.5rem)" }}
           >
             BRENDON
           </h1>
@@ -177,7 +207,8 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-4 text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-black/60 flex items-center gap-2"
+          className="mt-4 font-medium uppercase tracking-[0.2em] text-black/60 flex items-center gap-2"
+          style={{ fontSize: "clamp(1rem, 4.1vw, 1.125rem)" }}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           Multidisciplinary Designer &amp; Brand Strategist
@@ -187,13 +218,13 @@ export function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.75 }}
-          className="mt-6 max-w-2xl font-medium text-(--brendon-ink) flex flex-wrap items-center justify-center gap-2"
-          style={{ fontSize: "clamp(1.125rem, 2.4vw, 1.875rem)" }}
+          className="mt-6 max-w-2xl font-medium text-(--brendon-ink) text-center"
+          style={{ fontSize: "clamp(1.5rem, 6.9vw, 1.875rem)", letterSpacing: "-0.84px" }}
         >
-          I turn
-          <Image src={heroAssets.iconSpiralDart} alt="" width={28} height={28} className="inline-block w-6 h-6 md:w-7 md:h-7" />
-          ideas into brands people remember.
-          <Image src={heroAssets.iconFlower} alt="" width={24} height={24} className="inline-block w-5 h-5 md:w-6 md:h-6" />
+          I turn{" "}
+          <Image src={heroAssets.iconSpiralDart} alt="" width={28} height={28} className="inline-block w-6 h-6 md:w-7 md:h-7 align-middle mx-1" />
+          {" "}ideas into brands people remember.{" "}
+          <Image src={heroAssets.iconFlower} alt="" width={24} height={24} className="inline-block w-5 h-5 md:w-6 md:h-6 align-middle mx-1" />
         </motion.p>
 
         <motion.a
@@ -216,3 +247,5 @@ export function Hero() {
     </section>
   )
 }
+
+──────────────────────────────────────────────────────────────────────── */
