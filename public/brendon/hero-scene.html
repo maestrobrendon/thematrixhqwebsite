@@ -668,9 +668,12 @@
     .card--about{ left:calc(34 * var(--u)); top:calc(1050 * var(--u)); width:calc(692 * var(--u)); height:calc(250 * var(--u)); }
     .card--about .label{ top:calc(96 * var(--u)); }
     .card--about h2{ top:calc(124 * var(--u)); width:calc(400 * var(--u)); font-size:calc(32 * var(--u)); line-height:calc(36 * var(--u)); }
-    .card--stove{ left:calc(34 * var(--u)); top:calc(1324 * var(--u)); width:calc(692 * var(--u)); height:calc(268 * var(--u)); }
-    .card--stove h2{ font-size:calc(32 * var(--u)); }
-    .card--stove figure{ left:auto; right:calc(16 * var(--u)); bottom:calc(16 * var(--u)); width:calc(300 * var(--u)); height:calc(150 * var(--u)); }
+    .card--stove{ left:calc(34 * var(--u)); top:calc(1324 * var(--u)); width:calc(692 * var(--u)); height:calc(250 * var(--u)); }
+    .card--stove h2{ width:calc(400 * var(--u)); font-size:calc(32 * var(--u)); line-height:calc(36 * var(--u)); }
+    /* Same image treatment as .card--about below — top-right, same box —
+       so both mobile cards read as one consistent pattern instead of the
+       About photo and the Featured Work image being sized/placed differently. */
+    .card--stove figure,
     .card--about figure{ left:auto; right:calc(16 * var(--u)); top:calc(16 * var(--u)); width:calc(224 * var(--u)); height:calc(218 * var(--u)); }
     .card .knob{ right:calc(24 * var(--u)); bottom:calc(24 * var(--u)); }
     .card--stove .knob{ right:calc(30 * var(--u)); bottom:calc(30 * var(--u)); }
