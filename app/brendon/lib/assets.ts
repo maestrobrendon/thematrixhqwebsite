@@ -41,6 +41,14 @@ export const aboutAssets = {
   aboutMeTag: cld("Blue_About_me_krwcrd"),
 }
 
+// Reuses the same real photo already shown in the About section (IMG_6930),
+// just at sizes suited for schema.org/OpenGraph rather than the polaroid UI —
+// avoids inventing a placeholder headshot URL that doesn't actually exist yet.
+export const seoAssets = {
+  headshot: cld("IMG_6930_lobccg", "f_auto,q_auto,w_1200"),
+  ogImage: cld("IMG_6930_lobccg", "f_auto,q_auto,w_1200,h_630,c_fill,g_face"),
+}
+
 export const featuredWorkAssets = {
   projectFrameIcon: cld("Frame_project_text_icon_aaklrj"),
   projectsTag: cld("Blue_PROJECTS_cxp8vk"),

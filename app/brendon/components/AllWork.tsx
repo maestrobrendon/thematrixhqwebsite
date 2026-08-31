@@ -124,7 +124,12 @@ function ProjectCard({ project }: { project: Project }) {
           <video src={project.video} controls autoPlay className="h-full w-full object-cover" />
         ) : (
           <button onClick={() => setPlaying(true)} className="block h-full w-full cursor-pointer" aria-label={`Play ${project.title}`}>
-            <img src={project.image} alt={project.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" draggable={false} />
+            <img
+              src={project.image}
+              alt={`${project.title} — ${project.categories.join(", ")}`}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              draggable={false}
+            />
             <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/30">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90">
                 <Play className="ml-0.5 h-5 w-5 text-black" fill="currentColor" />
@@ -146,7 +151,12 @@ function ProjectCard({ project }: { project: Project }) {
       rel="noopener noreferrer"
       className="group relative block h-64 w-72 shrink-0 overflow-hidden rounded-xl"
     >
-      <img src={project.image} alt={project.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" draggable={false} />
+      <img
+        src={project.image}
+        alt={`${project.title} — ${project.categories.join(", ")}`}
+        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        draggable={false}
+      />
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3">
         <p className="truncate text-sm font-medium text-white">{project.title}</p>
       </div>

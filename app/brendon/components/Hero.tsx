@@ -14,11 +14,19 @@
  * revert: swap `export function Hero()` back to the block below and drop
  * this iframe version.
  */
-export function Hero() {
+export function Hero({ sceneSrc = "/brendon/hero-scene.html" }: { sceneSrc?: string }) {
   return (
     <section className="relative h-svh overflow-hidden">
+      {/* The hero's actual heading/copy lives inside the iframe document
+          below, which search engines don't attribute to *this* page's
+          heading outline — without this, the homepage has no real <h1> at
+          all. Visually hidden (not visually duplicated over the 3D scene)
+          but present in the DOM for crawlers and screen readers. */}
+      <h1 className="sr-only">
+        Brendon Oleghe — Multidisciplinary Designer &amp; Brand Strategist, also known as Maestro Brendon
+      </h1>
       <iframe
-        src="/brendon/hero-scene.html"
+        src={sceneSrc}
         title="Brendon Oleghe — Multidisciplinary Designer"
         loading="eager"
         className="absolute inset-0 h-full w-full border-0"

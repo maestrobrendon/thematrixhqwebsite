@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { StickyNote } from "./StickyNote"
 import { aboutAssets } from "../lib/assets"
 import { CheckerIcon, StarburstIcon, EyeIcon, DotsIcon } from "./SkillIcons"
+import { useBrendonHref } from "../lib/useBrendonHref"
 
 const skills = [
   { label: "Brand Identity", Icon: CheckerIcon, bg: "#f2b705", text: "#1a1400" },
@@ -16,6 +17,7 @@ const skills = [
 
 export function About() {
   const boundsRef = useRef<HTMLDivElement>(null)
+  const aboutPageHref = useBrendonHref("/about")
 
   return (
     <section id="about" ref={boundsRef} className="relative py-16 md:py-20 px-6 bg-white overflow-hidden">
@@ -30,7 +32,7 @@ export function About() {
           className="hidden lg:block absolute right-0 top-28 w-36 bg-white p-2 pb-6 shadow-lg border border-black/5 z-10"
         >
           <div className="relative w-full aspect-4/5 overflow-hidden">
-            <Image src={aboutAssets.workspacePhoto} alt="Brendon, 2026" fill className="object-cover" />
+            <Image src={aboutAssets.workspacePhoto} alt="Brendon Oleghe at his workspace, 2026" fill className="object-cover" />
           </div>
           <p className="font-hand text-center text-sm mt-1 text-black/70">2026</p>
         </motion.div>
@@ -73,7 +75,7 @@ export function About() {
             className="lg:hidden mx-auto mt-6 w-28 bg-white p-2 pb-5 shadow-lg border border-black/5"
           >
             <div className="relative w-full aspect-4/5 overflow-hidden">
-              <Image src={aboutAssets.workspacePhoto} alt="Brendon, 2026" fill className="object-cover" />
+              <Image src={aboutAssets.workspacePhoto} alt="Brendon Oleghe at his workspace, 2026" fill className="object-cover" />
             </div>
             <p className="font-hand text-center text-xs mt-1 text-black/70">2026</p>
           </motion.div>
@@ -86,7 +88,12 @@ export function About() {
             className="mt-8 text-base md:text-lg text-(--brendon-muted) max-w-xl mx-auto"
           >
             7+ years leading design across fintech, Web3, e-commerce, and real estate. 80+ brands built. I merge
-            aesthetics with strategy, so the work looks good and actually moves the business.
+            aesthetics with strategy, so the work looks good and actually moves the business. Also known as{" "}
+            <span className="text-(--brendon-ink) font-medium">Maestro Brendon</span> — read the full story on{" "}
+            <a href={aboutPageHref} className="underline underline-offset-2 hover:text-(--brendon-ink)">
+              the about page
+            </a>
+            .
           </motion.p>
 
           {/* Skill pills */}

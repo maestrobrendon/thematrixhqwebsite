@@ -165,7 +165,13 @@ function Panel({ project, index, n, scrollYProgress }: { project: Project; index
         </div>
 
         <div className="selection-frame relative aspect-4/3 w-full">
-          <Image src={project.image} alt={project.title} fill className="object-cover" sizes="(min-width: 768px) 40vw, 90vw" />
+          <Image
+            src={project.image}
+            alt={`${project.title} — ${project.tags.join(", ")}`}
+            fill
+            className="object-cover"
+            sizes="(min-width: 768px) 40vw, 90vw"
+          />
           <span className="handle handle-bl" />
           <span className="handle handle-br" />
           <ImageBadge bg={scheme.badgeBg} text={scheme.badgeText} />
