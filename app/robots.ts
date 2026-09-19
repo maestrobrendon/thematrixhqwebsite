@@ -1,11 +1,13 @@
 import type { MetadataRoute } from "next"
 import { headers } from "next/headers"
+import { isBrendonHost } from "./brendon/lib/isBrendonHost"
 
-// This one Next.js deployment serves three real hosts via middleware.ts
+// This one Next.js deployment serves several real hosts via middleware.ts
 // rewrites — thematrixhq.com (the agency site), wiki.thematrixhq.com
-// (private, auth-gated), and brendon.thematrixhq.com (Brendon's portfolio,
-// rewritten from /brendon). robots.txt has to answer per-host, not with one
-// fixed file, or one of those three gets the wrong rules.
+// (private, auth-gated), and brendon.thematrixhq.com / maestrobrendon.com /
+// www.maestrobrendon.com (Brendon's portfolio, all rewritten from /brendon —
+// see isBrendonHost). robots.txt has to answer per-host, not with one fixed
+// file, or some of those hosts get the wrong rules.
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const host = (await headers()).get("host") ?? ""
 
@@ -14,7 +16,11 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     return { rules: { userAgent: "*", disallow: "/" } }
   }
 
-  if (host.startsWith("brendon.")) {
+  if (isBrendonHost(host)) {
+    // All Brendon hosts point at the same sitemap and the same canonical
+    // (brendon.thematrixhq.com, set via metadataBase) — a vanity domain like
+    // maestrobrendon.com is still fine to crawl, its pages just fold their
+    // ranking signal back into that one canonical via rel=canonical.
     return {
       rules: { userAgent: "*", allow: "/" },
       sitemap: "https://brendon.thematrixhq.com/sitemap.xml",

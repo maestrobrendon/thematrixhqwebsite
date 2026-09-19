@@ -1,14 +1,15 @@
 import type { MetadataRoute } from "next"
 import { headers } from "next/headers"
+import { isBrendonHost } from "./brendon/lib/isBrendonHost"
 
-// Same three-host situation as robots.ts — each host needs its own sitemap
+// Same multi-host situation as robots.ts — each host needs its own sitemap
 // listing only the routes that are actually canonical on that host.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const host = (await headers()).get("host") ?? ""
 
   if (host.startsWith("wiki.")) return []
 
-  if (host.startsWith("brendon.")) {
+  if (isBrendonHost(host)) {
     return [
       {
         url: "https://brendon.thematrixhq.com/",
