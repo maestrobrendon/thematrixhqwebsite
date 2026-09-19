@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { jwtVerify } from "jose"
 import { COOKIE_NAME, JWT_SECRET } from "@/lib/wiki/auth"
+import { isBrendonHost } from "@/app/brendon/lib/isBrendonHost"
 
 const WIKI_PUBLIC = ["/access", "/api/auth", "/api/logout"]
 
@@ -12,8 +13,8 @@ export async function middleware(req: NextRequest) {
   const hostname = req.headers.get("host") ?? ""
   const { pathname } = req.nextUrl
 
-  // brendon.thematrixhq.com/* → /brendon/* (same content as /brendon)
-  if (hostname.startsWith("brendon.")) {
+  // brendon.thematrixhq.com/*, maestrobrendon.com/* → /brendon/* (same content as /brendon)
+  if (isBrendonHost(hostname)) {
     const rewriteUrl = req.nextUrl.clone()
     rewriteUrl.pathname = `/brendon${pathname === "/" ? "" : pathname}`
     return NextResponse.rewrite(rewriteUrl)

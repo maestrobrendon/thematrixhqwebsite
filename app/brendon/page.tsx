@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { Hero } from "./components/Hero"
+import { isBrendonHost } from "./lib/isBrendonHost"
 import { About } from "./components/About"
 import { FeaturedWork } from "./components/FeaturedWork"
 import { AllWork } from "./components/AllWork"
@@ -52,7 +53,7 @@ export default async function BrendonPortfolioPage() {
   // middleware rewrite it correctly to "/brendon/hero-scene.html". The main
   // thematrixhq.com host isn't rewritten at all, so it needs the direct path.
   const host = (await headers()).get("host") ?? ""
-  const sceneSrc = host.startsWith("brendon.") ? "/hero-scene.html" : "/brendon/hero-scene.html"
+  const sceneSrc = isBrendonHost(host) ? "/hero-scene.html" : "/brendon/hero-scene.html"
 
   return (
     <main className="relative bg-white text-(--brendon-ink) font-body">

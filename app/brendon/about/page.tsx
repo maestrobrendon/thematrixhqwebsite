@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { Footer } from "../components/Footer"
 import { aboutAssets, seoAssets } from "../lib/assets"
+import { isBrendonHost } from "../lib/isBrendonHost"
 
 export const metadata: Metadata = {
   title: "About Brendon Oleghe (Maestro Brendon) — Career, Education & Ventures",
@@ -35,11 +36,11 @@ export const metadata: Metadata = {
   },
 }
 
-// Same content, two hosts — see middleware.ts. Resolved server-side here so
-// the "back home" link is correct on first paint, no client-side swap needed.
+// Same content, multiple hosts — see middleware.ts. Resolved server-side here
+// so the "back home" link is correct on first paint, no client-side swap needed.
 async function homeHref() {
   const host = (await headers()).get("host") ?? ""
-  return host.startsWith("brendon.") ? "/" : "/brendon"
+  return isBrendonHost(host) ? "/" : "/brendon"
 }
 
 export default async function AboutPage() {
@@ -96,8 +97,8 @@ export default async function AboutPage() {
             </p>
             <p className="mt-4">
               Earlier, he led branding for two major token launches as Lead Graphics Designer at Quintes (Nov 2024 –
-              July 2025), helping secure $2M+ in seed funding, and built an end-to-end brand identity system for a
-              digital banking platform as a contract Brand Identity Designer at LEDGA (May 2024 – Aug 2024).
+              July 2025), and built an end-to-end brand identity system for a digital banking platform as a
+              contract Brand Identity Designer at LEDGA (May 2024 – Aug 2024).
             </p>
             <p className="mt-4">
               From August 2019 to October 2024, Brendon was Creative Director at{" "}
@@ -119,7 +120,10 @@ export default async function AboutPage() {
 
           <section>
             <h2 className="font-display text-xl md:text-2xl tracking-tight text-(--brendon-ink) mb-4">Education</h2>
-            <p>Bachelor of Science in Computer Science, University of Benin, 2023.</p>
+            <p>
+              Bachelor of Science in Computer Science, University of Benin, 2023. While an undergraduate, he won the
+              award for Best Graphics Designer across the entire campus.
+            </p>
           </section>
 
           <section>
@@ -127,9 +131,10 @@ export default async function AboutPage() {
               Other ventures
             </h2>
             <p>
-              Outside of client design work, Brendon has built and backed a handful of smaller ventures: Viax
-              Global Logistics, Bake Box, Maestro Mills, Scoops by Maestro, Aaron Noir, and Cyon&apos;s Treat. Maestro
-              Mills received a ₦500,000 grant from JCI IEES in 2024.
+              Outside of client design work, Brendon is very passionate about entrepreneurship and has built and
+              co-founded a handful of smaller ventures: Viax Global Logistics, Bake Box (a drive-through
+              restaurant), Maestro Mills (an innovative cereal product), and Scoops by Maestro (an ice cream
+              company).
             </p>
           </section>
         </article>

@@ -87,8 +87,9 @@ export function About() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-8 text-base md:text-lg text-(--brendon-muted) max-w-xl mx-auto"
           >
-            7+ years leading design across fintech, Web3, e-commerce, and real estate. 80+ brands built. I merge
-            aesthetics with strategy, so the work looks good and actually moves the business. Also known as{" "}
+            with over 7+ years crafting design strategy for large and medium sized institutions in finance, Web3,
+            crypto, real estate, Ai, tech and in-house agencies. I merge aesthetics with strategy, so the work looks
+            good and actually moves the business. Also known as{" "}
             <span className="text-(--brendon-ink) font-medium">Maestro Brendon</span> — read the full story on{" "}
             <a href={aboutPageHref} className="underline underline-offset-2 hover:text-(--brendon-ink)">
               the about page

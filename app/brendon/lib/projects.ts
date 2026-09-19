@@ -1,5 +1,184 @@
 import { projectCovers } from "./assets"
 
+// Full "All Work" archive — motion pieces carry a `video` and no `href` (they
+// play inline instead of navigating out); everything else is a plain image
+// card linking to its Behance case study or live site. Pulled from
+// app/work/page.tsx's behanceProjects/websiteProjects list, the agency's own
+// case study data — titles, images, links, and categories kept verbatim
+// except where noted below.
+export type ArchiveProject = {
+  slug: string
+  title: string
+  image: string
+  video?: string
+  href?: string
+  tags: string[]
+  date: string
+  format: "image" | "video"
+}
+
+export const archiveProjects: ArchiveProject[] = [
+  {
+    slug: "alavda-travel",
+    title: "Alavda Travel",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764278972/vdeiw8wlj7gdjgbsbw4s.jpg",
+    href: "https://www.behance.net/gallery/222946803/Alavda-Travel-Brand-Identity-Design",
+    tags: ["Brand Identity", "Design System"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    slug: "arclly-grocery-branding",
+    title: "ARCLLY - Grocery Branding",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764280363/ifdv28cltsgypa7nhhuv.jpg",
+    href: "https://www.behance.net/gallery/209998445/ARCLLY-Grocery-Branding",
+    tags: ["Brand Identity", "Design System"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    slug: "stixs-and-codes",
+    title: "Stixs and Codes - Kids Tech Academy",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764279109/ryrwpj24gnfju87pbkbs.jpg",
+    href: "https://www.behance.net/gallery/225121059/Stix-Codes-Branding-for-a-Kids-Tech-Academy",
+    tags: ["Brand Identity", "Design System"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    slug: "letspot-token",
+    title: "Letspot Token - Crypto Jackpot",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764279314/qttpvs3rqmdwba5hsojy.jpg",
+    href: "https://www.behance.net/gallery/225118937/Crypto-Jackpot-The-Ultimate-Web3-Prize-Token",
+    tags: ["Brand Identity"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    slug: "wevolte-engineering",
+    title: "Wevolte Engineering",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764279295/mziuakmaaf8bsmyieuyn.png",
+    href: "https://www.behance.net/gallery/209972307/WEVOLTE-Engineering-Brand-Identity-Design",
+    tags: ["Brand Identity", "Web Design"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    slug: "wmm-solutions-brand-identity",
+    title: "WMM Solutions - Brand Identity",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764279573/jnhrw9xc6fgctlgs9mqd.jpg",
+    href: "https://www.behance.net/gallery/209968573/WMM-SOLUTIONS-Branding-and-Visual-Identity-Design",
+    tags: ["Brand Identity"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    // Same Behance case study as "WMM Solutions - Website Design" in the old
+    // archive — renamed to match the title used for this project everywhere
+    // else in the agency's own data (app/work/page.tsx's behanceProjects),
+    // rather than adding a second card for an identical link.
+    slug: "modern-finance-website",
+    title: "Modern Finance Website",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764279591/rmfuu4p1rygnmtt0wfdm.jpg",
+    href: "https://www.behance.net/gallery/233993689/Modern-Website-Design-for-a-Finance-Company",
+    tags: ["Web Design"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    slug: "elysium-jetty",
+    title: "Elysium Jetty",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764279705/vt5iz1esenykqnsxz5sr.jpg",
+    href: "https://www.behance.net/gallery/209971863/Elysium-Branding",
+    tags: ["Brand Identity"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    slug: "penumbra-interiors",
+    title: "Penumbra Interiors",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764279438/gh07foriuqoz7rfkligd.png",
+    href: "https://www.behance.net/gallery/209966253/Penumbra-Interiors-Brand-Identity-Design",
+    tags: ["Brand Identity"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    slug: "assura-cash",
+    title: "Assura Cash",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764281754/mnv7i1uyrl4pgfowyjrk.jpg",
+    href: "https://assuracash.com",
+    tags: ["Web Design"],
+    date: "2025",
+    format: "image",
+  },
+  {
+    slug: "moods-and-motion",
+    title: "Moods and Motion",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764281736/kpccrqsvrrqz8ew5htbt.jpg",
+    href: "https://moodsandmotion.vercel.app",
+    tags: ["Web Design"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    // Tagged E-commerce at the source (app/work/page.tsx); re-tagged Web
+    // Design here per confirmation, since it's a real live build.
+    slug: "inaara-woman",
+    title: "Inaara Woman",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1764281205/yruv2nywtqxicdja6kxe.jpg",
+    href: "https://inaarawoman.com",
+    tags: ["Web Design"],
+    date: "2024",
+    format: "image",
+  },
+  {
+    slug: "ogoori-design-system",
+    title: "Ogoori Design System",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1766400677/fmaifcbaq5mms26c5cpl.png",
+    video: "https://res.cloudinary.com/dusynu0kv/video/upload/v1766398819/osyhzcm8adyinj0nlrmt.mp4",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "sprrrint-video-animation",
+    title: "Sprrrint Video Animation",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1766400678/s5v8ggsze9d4yzlywzr4.png",
+    video: "https://res.cloudinary.com/dusynu0kv/video/upload/v1766399078/aslad9tkixaw5adyicte.mp4",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "starlight",
+    title: "STARLIGHT",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1766400692/slf1afdldj1g2ncypfcf.png",
+    video: "https://res.cloudinary.com/dusynu0kv/video/upload/v1766399139/ltqv45t0znmw6h8etxbe.mp4",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "rap-video",
+    title: "Rap Video",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1766400684/gi91ianii96z7f5xkil0.png",
+    video: "https://res.cloudinary.com/dusynu0kv/video/upload/v1766399567/duujdpjpotiyejyqwbku.mp4",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "severence-animation",
+    title: "Severence Animation",
+    image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1766400691/sexz3hs7efranmkvuo9y.png",
+    video: "https://res.cloudinary.com/dusynu0kv/video/upload/v1766400321/zz0gvweruizfybnvklbj.mp4",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+]
+
 export type Project = {
   slug: string
   number: string
@@ -61,16 +240,3 @@ export const projects: Project[] = [
     color: "magenta",
   },
 ]
-
-// Color scheme per card, read directly from the Project_1–4 SVG exports
-// (background hex) plus the confirmed tag-chip / IMAGE.JPG-badge pairing
-// per card. Each card uses its own pairing — not one shared rule.
-export const colorSchemes: Record<
-  Project["color"],
-  { bg: string; tabText: string; tagBg: string; tagText: string; badgeBg: string; badgeText: string }
-> = {
-  cyan: { bg: "#36c5f0", tabText: "#111212", tagBg: "#111212", tagText: "#36c5f0", badgeBg: "#111212", badgeText: "#36c5f0" },
-  black: { bg: "#111212", tabText: "#ffffff", tagBg: "#ffffff", tagText: "#111212", badgeBg: "#ffffff", badgeText: "#111212" },
-  gold: { bg: "#ecb22e", tabText: "#111212", tagBg: "#111212", tagText: "#ecb22e", badgeBg: "#ecb22e", badgeText: "#111212" },
-  magenta: { bg: "#e01e5a", tabText: "#ffffff", tagBg: "#ffffff", tagText: "#e01e5a", badgeBg: "#e01e5a", badgeText: "#ffffff" },
-}
