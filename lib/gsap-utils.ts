@@ -1,15 +1,150 @@
 'use client'
 
+import { useEffect, useRef, type RefObject } from 'react'
 import gsap from 'gsap/dist/gsap'
 import ScrollTrigger from 'gsap/dist/ScrollTrigger'
 import TextPlugin from 'gsap/dist/TextPlugin'
+import Draggable from 'gsap/dist/Draggable'
+import InertiaPlugin from 'gsap/dist/InertiaPlugin'
 
 // Register all plugins once
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger, TextPlugin)
+  gsap.registerPlugin(ScrollTrigger, TextPlugin, Draggable, InertiaPlugin)
 }
 
-export { gsap, ScrollTrigger }
+export { gsap, ScrollTrigger, Draggable, InertiaPlugin }
+
+// ── Reusable scroll-reveal hooks ──────────────────────────────────────────
+// The GSAP equivalent of framer-motion's `initial + whileInView +
+// viewport:{once:true}` pattern — one mechanism reused across every /brendon
+// component instead of each one hand-rolling its own ScrollTrigger.
+
+type RevealOptions = {
+  y?: number
+  x?: number
+  scale?: number
+  /** Settle FROM this angle TO the element's own resting rotate (its current inline/CSS rotate). */
+  rotateFrom?: number
+  duration?: number
+  delay?: number
+  start?: string
+  ease?: string
+}
+
+/** Fade + rise (or slide/scale/rotate-settle) a single element in once, on scroll into view. */
+export function useReveal<T extends HTMLElement = HTMLDivElement>(options: RevealOptions = {}): RefObject<T | null> {
+  const ref = useRef<T>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const { y = 0, x = 0, scale, rotateFrom, duration = 0.6, delay = 0, start = 'top 88%', ease = 'power3.out' } = options
+
+    const fromVars: gsap.TweenVars = { opacity: 0 }
+    const toVars: gsap.TweenVars = { opacity: 1, duration, delay, ease }
+    if (y) {
+      fromVars.y = y
+      toVars.y = 0
+    }
+    if (x) {
+      fromVars.x = x
+      toVars.x = 0
+    }
+    if (scale !== undefined) {
+      fromVars.scale = scale
+      toVars.scale = 1
+    }
+    if (rotateFrom !== undefined) {
+      // Resting rotate comes from whatever's already on the element (CSS
+      // `rotate` set via className/style) — read it so "to" settles back to
+      // that value instead of stomping it with an unrelated fixed number.
+      const resting = gsap.getProperty(el, 'rotate') as number
+      fromVars.rotate = rotateFrom
+      toVars.rotate = resting
+    }
+
+    const tween = gsap.fromTo(el, fromVars, {
+      ...toVars,
+      scrollTrigger: { trigger: el, start, once: true },
+    })
+    return () => {
+      tween.scrollTrigger?.kill()
+      tween.kill()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return ref
+}
+
+/** Fade + rise every direct child matching `selector` in, staggered, once. */
+export function useStaggerReveal<T extends HTMLElement = HTMLDivElement>(
+  selector: string,
+  options: RevealOptions & { stagger?: number } = {},
+): RefObject<T | null> {
+  const ref = useRef<T>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const targets = el.querySelectorAll(selector)
+    if (!targets.length) return
+    const { y = 12, scale, stagger = 0.08, duration = 0.4, start = 'top 90%', ease = 'power3.out' } = options
+
+    const fromVars: gsap.TweenVars = { opacity: 0, y }
+    if (scale !== undefined) fromVars.scale = scale
+
+    const tween = gsap.fromTo(targets, fromVars, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration,
+      stagger,
+      ease,
+      scrollTrigger: { trigger: el, start, once: true },
+    })
+    return () => {
+      tween.scrollTrigger?.kill()
+      tween.kill()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return ref
+}
+
+/**
+ * Scrub a tween's progress directly to scroll position across a trigger
+ * element's transit. Returns a ref for the animated element; pass
+ * `triggerRef` when the scroll range should be measured against a different
+ * (usually larger, e.g. the whole section) ancestor element instead.
+ */
+export function useScrollScrub<T extends HTMLElement = HTMLDivElement>(
+  fromVars: gsap.TweenVars,
+  toVars: gsap.TweenVars,
+  options: { start?: string; end?: string; triggerRef?: RefObject<HTMLElement | null> } = {},
+): RefObject<T | null> {
+  const ref = useRef<T>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const { start = 'top bottom', end = 'bottom top', triggerRef } = options
+    const trigger = triggerRef?.current ?? el
+    const tween = gsap.fromTo(el, fromVars, {
+      ...toVars,
+      ease: 'none',
+      scrollTrigger: { trigger, start, end, scrub: true },
+    })
+    return () => {
+      tween.scrollTrigger?.kill()
+      tween.kill()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return ref
+}
 
 // Reusable: fade + rise reveal for any element
 export function revealUp(

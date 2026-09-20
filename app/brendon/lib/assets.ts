@@ -66,3 +66,11 @@ export const perspectiveAssets = {
   // and CSS object-position alone couldn't keep him in frame at every width.
   workingPhoto: cld("IMG_7035_z00m4t", "c_fill,g_face,ar_16:9,w_1920,q_auto,f_auto"),
 }
+
+// Whimsical closer for the footer — a single stool on a grassy hill, echoing
+// the hero's own grass/moss scene as a quiet bookend to the page. Hosted on
+// a different Cloudinary account (dusynu0kv) than the rest of this file's
+// assets, so it bypasses the du5nhfcgd-scoped cld() helper above.
+export const footerAssets = {
+  hillStool: "https://res.cloudinary.com/dusynu0kv/image/upload/f_auto,q_auto,w_1600/v1789893574/mbwvwodbnicn1jkmr7jq.png",
+}

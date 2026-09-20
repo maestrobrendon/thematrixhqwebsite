@@ -348,7 +348,7 @@ export default function BrendonPortfolioPage() {
                   asChild
                   className="h-14 px-10 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-full text-base font-medium shadow-lg hover:shadow-xl transition-all"
                 >
-                  <a href="mailto:maestrobrendon@gmail.com">
+                  <a href="mailto:brendon@maestrobrendon.com">
                     <Mail className="w-4 h-4 mr-3" />
                     Let's Work Together
                   </a>
@@ -872,7 +872,7 @@ export default function BrendonPortfolioPage() {
                 asChild
                 className="w-full sm:w-auto h-14 px-10 bg-brendon-accent text-white hover:bg-brendon-accent-hover rounded-full text-base font-medium shadow-lg hover:shadow-xl transition-all"
               >
-                <a href="mailto:maestrobrendon@gmail.com">
+                <a href="mailto:brendon@maestrobrendon.com">
                   <Mail className="w-4 h-4 mr-3" />
                   Email Me
                 </a>

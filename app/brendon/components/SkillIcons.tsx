@@ -1,6 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useEffect, useRef } from "react"
+import { gsap } from "@/lib/gsap-utils"
 
 // Inline SVGs (not <img>/<Image>) so individual shapes inside can be animated
 // independently. Each one idles forever — slow, quiet motion, not a hover effect.
@@ -14,21 +15,39 @@ const CHECKER_TILES = [
 
 /** Brand Identity — four diamond tiles fading in and out of sync with each other. */
 export function CheckerIcon({ className }: { className?: string }) {
+  const ref = useRef<SVGSVGElement>(null)
+
+  useEffect(() => {
+    const tiles = ref.current?.querySelectorAll<SVGRectElement>("[data-tile]")
+    if (!tiles?.length) return
+    const tweens = Array.from(tiles).map((tile, i) =>
+      gsap.to(tile, {
+        opacity: 0.2,
+        duration: 1.8,
+        delay: CHECKER_TILES[i].delay,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      }),
+    )
+    return () => tweens.forEach((t) => t.kill())
+  }, [])
+
   return (
-    <svg viewBox="0 0 64 64" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg ref={ref} viewBox="0 0 64 64" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="64" height="64" fill="#ECB22E" />
       <rect x="1.5" y="1.5" width="61" height="61" stroke="#522E29" strokeWidth="3" strokeDasharray="6 3" />
       {CHECKER_TILES.map((t, i) => (
-        <motion.rect
+        <rect
           key={i}
+          data-tile
           x={t.x}
           y={t.y}
           width="11"
           height="11"
           transform={`rotate(45 ${t.x + 5.5} ${t.y + 5.5})`}
           fill="#111212"
-          animate={{ opacity: [0.95, 0.2, 0.95] }}
-          transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: t.delay }}
+          opacity={0.95}
         />
       ))}
     </svg>
@@ -39,18 +58,23 @@ const RAY_COUNT = 8
 
 /** Art Direction — the whole ray cluster turns slowly behind a static center dot. */
 export function StarburstIcon({ className }: { className?: string }) {
+  const groupRef = useRef<SVGGElement>(null)
+
+  useEffect(() => {
+    const el = groupRef.current
+    if (!el) return
+    const tween = gsap.to(el, { rotate: 360, duration: 18, repeat: -1, ease: "none", transformOrigin: "32px 32px" })
+    return () => tween.kill()
+  }, [])
+
   return (
     <svg viewBox="0 0 64 64" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="64" height="64" fill="#3fae6a" />
-      <motion.g
-        style={{ transformOrigin: "32px 32px" }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-      >
+      <g ref={groupRef}>
         {Array.from({ length: RAY_COUNT }).map((_, i) => (
           <path key={i} d="M32 5 L37.5 23 L32 18.5 L26.5 23 Z" fill="#111212" transform={`rotate(${(i * 360) / RAY_COUNT} 32 32)`} />
         ))}
-      </motion.g>
+      </g>
       <circle cx="32" cy="32" r="13.8" fill="#E01E5A" />
     </svg>
   )
@@ -58,14 +82,31 @@ export function StarburstIcon({ className }: { className?: string }) {
 
 /** Design Systems — a periodic blink: long open pause, quick close, reopen. */
 export function EyeIcon({ className }: { className?: string }) {
+  const groupRef = useRef<SVGGElement>(null)
+
+  useEffect(() => {
+    const el = groupRef.current
+    if (!el) return
+    const tween = gsap.to(el, {
+      keyframes: {
+        "0%": { scaleY: 1 },
+        "80%": { scaleY: 1 },
+        "86%": { scaleY: 0.08 },
+        "92%": { scaleY: 1 },
+        "100%": { scaleY: 1 },
+      },
+      duration: 4.5,
+      repeat: -1,
+      ease: "power1.inOut",
+      transformOrigin: "32px 32px",
+    })
+    return () => tween.kill()
+  }, [])
+
   return (
     <svg viewBox="0 0 64 64" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="64" height="64" fill="#E01E5A" />
-      <motion.g
-        style={{ transformOrigin: "32px 32px" }}
-        animate={{ scaleY: [1, 1, 0.08, 1, 1] }}
-        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", times: [0, 0.8, 0.86, 0.92, 1] }}
-      >
+      <g ref={groupRef}>
         <path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -73,7 +114,7 @@ export function EyeIcon({ className }: { className?: string }) {
           fill="white"
         />
         <path d="M31.5 22.5L34.3 29.2L41 32L34.3 34.8L31.5 41.5L28.7 34.8L22 32L28.7 29.2Z" fill="#ECB22E" />
-      </motion.g>
+      </g>
     </svg>
   )
 }
@@ -90,19 +131,30 @@ const DOTS = [
 
 /** Motion Design — every dot drifts to a slightly offset position on its own loop. */
 export function DotsIcon({ className }: { className?: string }) {
+  const ref = useRef<SVGSVGElement>(null)
+
+  useEffect(() => {
+    const circles = ref.current?.querySelectorAll<SVGCircleElement>("[data-dot]")
+    if (!circles?.length) return
+    const tweens = Array.from(circles).map((circle, i) =>
+      gsap.to(circle, {
+        x: DOTS[i].dx,
+        y: DOTS[i].dy,
+        duration: DOTS[i].duration / 2,
+        delay: DOTS[i].delay,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      }),
+    )
+    return () => tweens.forEach((t) => t.kill())
+  }, [])
+
   return (
-    <svg viewBox="0 0 64 64" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg ref={ref} viewBox="0 0 64 64" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="64" height="64" fill="#36C5F0" />
       {DOTS.map((d, i) => (
-        <motion.circle
-          key={i}
-          cx={d.cx}
-          cy={d.cy}
-          r={d.r}
-          fill={d.fill}
-          animate={{ x: [0, d.dx, 0], y: [0, d.dy, 0] }}
-          transition={{ duration: d.duration, repeat: Infinity, ease: "easeInOut", delay: d.delay }}
-        />
+        <circle key={i} data-dot cx={d.cx} cy={d.cy} r={d.r} fill={d.fill} />
       ))}
     </svg>
   )

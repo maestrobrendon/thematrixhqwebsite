@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
+import { useEffect, useRef, useState } from "react"
+import { gsap, useReveal, useStaggerReveal } from "@/lib/gsap-utils"
 
 const jobs = [
   {
@@ -55,63 +55,88 @@ const jobs = [
   },
 ]
 
+function JobRow({ job, isOpen, onToggle }: { job: (typeof jobs)[number]; isOpen: boolean; onToggle: () => void }) {
+  const chevronRef = useRef<SVGSVGElement>(null)
+  const pathRef = useRef<SVGPathElement>(null)
+  const mounted = useRef(false)
+
+  useEffect(() => {
+    // Matches framer-motion's `initial={false}` — the row that starts open
+    // (expanded === 0 on first paint) should already read as open, not
+    // visibly animate in the instant the page loads.
+    const method = mounted.current ? gsap.to : gsap.set
+    method(chevronRef.current, { rotate: isOpen ? 180 : 0, duration: 0.3, ease: "power2.inOut", transformOrigin: "50% 50%" })
+    method(pathRef.current, { color: isOpen ? "var(--brendon-magenta)" : "rgba(0,0,0,0.35)", duration: 0.3 })
+    mounted.current = true
+  }, [isOpen])
+
+  return (
+    <div className="group border-l-2 border-black/15 pl-6 md:pl-8 pb-6 relative">
+      <div
+        className={`absolute left-0 top-1.5 w-3 h-3 rounded-full border-2 -translate-x-[7px] bg-white transition-all ${
+          isOpen ? "border-[var(--brendon-magenta)] scale-125" : "border-black/25"
+        }`}
+      />
+      <button onClick={onToggle} className="w-full text-left cursor-pointer">
+        <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 md:gap-4">
+          <div>
+            <h3 className="text-lg md:text-xl font-bold text-(--brendon-ink)">{job.company}</h3>
+            <p className="text-sm md:text-base text-(--brendon-muted)">{job.role}</p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs md:text-sm font-mono-accent text-black/40">{job.period}</span>
+            <svg ref={chevronRef} viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 shrink-0" aria-hidden="true">
+              <path
+                ref={pathRef}
+                d="M3 6.2c1.8 2.4 3.2 4.1 5 4.1s3.2-1.7 5-4.1"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-black/35"
+              />
+            </svg>
+          </div>
+        </div>
+
+        {/* CSS grid-rows collapse instead of an animated/measured "auto"
+            height — no JS measurement step means no risk of a stale or
+            never-applied height leaving a closed row's space reserved but
+            empty (exactly the bug this replaced). */}
+        <div
+          className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+          style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+        >
+          <div className="overflow-hidden">
+            <p className="text-sm md:text-base leading-relaxed pt-3 text-(--brendon-muted)">{job.description}</p>
+          </div>
+        </div>
+      </button>
+    </div>
+  )
+}
+
 export function ExperienceExpertise() {
   const [expanded, setExpanded] = useState<number | null>(0)
+  const headerRef = useReveal<HTMLDivElement>({ y: 20, duration: 0.6 })
+  const listRef = useStaggerReveal<HTMLDivElement>(".job-row", { x: -20, y: 0, duration: 0.5, stagger: 0.08 })
 
   return (
     <section className="py-16 md:py-20 px-6 bg-white border-t border-black/10">
       <div className="max-w-3xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-12 md:mb-16 text-center"
-        >
+        <div ref={headerRef} className="mb-12 md:mb-16 text-center">
           <span className="font-hand text-xl text-black/60">career journey</span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl tracking-tight text-(--brendon-ink) mt-2">
             EXPERIENCE &amp; EXPERTISE
           </h2>
-        </motion.div>
+        </div>
 
-        <div className="space-y-2">
-          {jobs.map((job, index) => {
-            const isOpen = expanded === index
-            return (
-              <motion.div
-                key={job.company}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.08 }}
-                className="group border-l-2 border-black/15 pl-6 md:pl-8 pb-6 relative"
-              >
-                <div
-                  className={`absolute left-0 top-1.5 w-3 h-3 rounded-full border-2 -translate-x-[7px] bg-white transition-all ${
-                    isOpen ? "border-[var(--brendon-magenta)] scale-125" : "border-black/25"
-                  }`}
-                />
-                <button onClick={() => setExpanded(isOpen ? null : index)} className="w-full text-left cursor-pointer">
-                  <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 md:gap-4">
-                    <div>
-                      <h3 className="text-lg md:text-xl font-bold text-(--brendon-ink)">{job.company}</h3>
-                      <p className="text-sm md:text-base text-(--brendon-muted)">{job.role}</p>
-                    </div>
-                    <span className="text-xs md:text-sm font-mono-accent text-black/40 shrink-0">{job.period}</span>
-                  </div>
-
-                  <motion.div
-                    initial={false}
-                    animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-sm md:text-base leading-relaxed pt-3 text-(--brendon-muted)">{job.description}</p>
-                  </motion.div>
-                </button>
-              </motion.div>
-            )
-          })}
+        <div ref={listRef} className="space-y-2">
+          {jobs.map((job, index) => (
+            <div key={job.company} className="job-row">
+              <JobRow job={job} isOpen={expanded === index} onToggle={() => setExpanded(expanded === index ? null : index)} />
+            </div>
+          ))}
         </div>
       </div>
     </section>

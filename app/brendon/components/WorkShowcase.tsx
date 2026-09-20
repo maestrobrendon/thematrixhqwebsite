@@ -1,11 +1,16 @@
 "use client"
 
 import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from "react"
-import { motion, useMotionValue, type PanInfo } from "framer-motion"
 import { projects } from "../lib/projects"
+import { gsap, Draggable } from "@/lib/gsap-utils"
 
 const ROTATE_DEG = -6
 const ROTATE_RAD = (Math.abs(ROTATE_DEG) * Math.PI) / 180
+
+// Idle autoplay speed, in pixels/second — slow and steady, more "ambient
+// slideshow" than a ticker. At this pace a full loop through the group takes
+// well over a minute, so it reads as gentle drift rather than a race.
+const AUTOPLAY_PX_PER_SEC = 26
 
 // Card size is fixed (roughly 4:3) but scales down on narrow viewports so
 // at least 4-5 cards stay visible in the window instead of 1-2 huge ones.
@@ -37,8 +42,9 @@ const Tile = forwardRef<HTMLAnchorElement, { project: (typeof projects)[number];
 )
 
 export function WorkShowcase() {
-  const x = useMotionValue(0)
   const rowRef = useRef<HTMLDivElement>(null)
+  const windowRef = useRef<HTMLDivElement>(null)
+  const firstTileRef = useRef<HTMLAnchorElement>(null)
   const copyStartRef = useRef<(HTMLDivElement | null)[]>([])
   const groupWidthRef = useRef(0)
   // Keeps re-centering on every remeasure until the visitor actually grabs
@@ -47,9 +53,10 @@ export function WorkShowcase() {
   // centering against it once would land outside the real content once the
   // ResizeObserver fires again with the true width.
   const userDraggedRef = useRef(false)
-  // A real drag needs to suppress the click that follows it (framer still
-  // fires one on release) — a tap that never moved shouldn't be suppressed,
-  // so this only blocks navigation once the pointer has actually traveled.
+  // A real drag needs to suppress the click that follows it (GSAP Draggable
+  // still lets the browser fire one on release) — a tap that never moved
+  // shouldn't be suppressed, so this only blocks navigation once the pointer
+  // has actually traveled.
   const dragDistanceRef = useRef(false)
 
   // Three identical copies of the row sit side by side. groupWidth is the
@@ -66,7 +73,7 @@ export function WorkShowcase() {
       if (!userDraggedRef.current) {
         // Start on the middle (real, focusable) copy rather than the left
         // decorative one, so keyboard/first-paint focus lands somewhere real.
-        x.set(-width)
+        gsap.set(rowRef.current, { x: -width })
       }
     }
   }
@@ -85,22 +92,94 @@ export function WorkShowcase() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Wrapping has to react to every change in x, not just live pointer
-  // movement — a fast flick keeps gliding on its own (framer's momentum/
-  // inertia animation) well after onDrag stops firing, and without this it
-  // could sail past the 3-copy buffer and drag blank space into view.
+  // Seamless infinite drag: a detached proxy element absorbs the raw,
+  // unbounded drag/inertia distance (so GSAP's own momentum math has no
+  // artificial bounds to fight), and every update wraps that distance back
+  // into the middle copy's [-groupWidth, 0] range before painting it onto
+  // the actual row — the standard GSAP pattern for a looping draggable strip.
+  //
+  // Idle autoplay drives the same proxy the same way — it's just another
+  // source of "-=x" on proxy.x, paused the instant a real drag takes over
+  // and resumed once the visitor lets go (immediately for a plain release,
+  // or once any momentum throw finishes coasting).
   useEffect(() => {
-    const unsubscribe = x.on("change", (latest) => {
-      const width = groupWidthRef.current
-      if (!width) return
-      if (latest <= -width * 2) x.set(latest + width)
-      else if (latest > 0) x.set(latest - width)
-    })
-    return unsubscribe
-  }, [x])
+    const row = rowRef.current
+    const windowEl = windowRef.current
+    if (!row) return
+    const proxy = document.createElement("div")
+    let startX = 0
 
-  const handleDrag = (_: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) => {
-    dragDistanceRef.current = Math.abs(info.offset.x) > 5
+    // `this` inside a plain tween's onUpdate is the tween itself, not the
+    // target — Draggable instances are the ones that expose a real `.x`.
+    // Reading the proxy's animated position back through gsap.getProperty
+    // works for both cases (a plain tween OR a Draggable-moved element).
+    function updateProgress() {
+      const width = groupWidthRef.current || 1
+      const x = gsap.getProperty(proxy, "x") as number
+      gsap.set(row, { x: gsap.utils.wrap(-width, 0, x) })
+    }
+
+    const autoplay = gsap.to(proxy, {
+      x: "-=100000",
+      duration: 100000 / AUTOPLAY_PX_PER_SEC,
+      ease: "none",
+      repeat: -1,
+      onUpdate: updateProgress,
+    })
+
+    const [draggable] = Draggable.create(proxy, {
+      type: "x",
+      trigger: row,
+      inertia: true,
+      allowNativeTouchScrolling: true,
+      onPress() {
+        startX = this.x
+        autoplay.pause()
+      },
+      onDragStart() {
+        userDraggedRef.current = true
+        dragDistanceRef.current = false
+      },
+      onDrag() {
+        if (Math.abs(this.x - startX) > 5) dragDistanceRef.current = true
+        updateProgress()
+      },
+      onThrowUpdate: updateProgress,
+      onDragEnd() {
+        // No inertia tween picked up after release (a slow/short drag) —
+        // resume right away instead of waiting for a throw that isn't coming.
+        if (!this.tween) autoplay.restart()
+      },
+      onThrowComplete() {
+        autoplay.restart()
+      },
+    })
+
+    // Pausing on hover is a mouse-only nicety — hovering to look closer
+    // shouldn't fight a strip still drifting underneath the pointer.
+    const pause = () => autoplay.pause()
+    const resume = () => {
+      if (!draggable.isDragging && !draggable.isThrowing) autoplay.resume()
+    }
+    windowEl?.addEventListener("pointerenter", pause)
+    windowEl?.addEventListener("pointerleave", resume)
+
+    return () => {
+      windowEl?.removeEventListener("pointerenter", pause)
+      windowEl?.removeEventListener("pointerleave", resume)
+      autoplay.kill()
+      draggable.kill()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleClickCapture = (e: React.MouseEvent) => {
+    // GSAP Draggable still lets a click through after a drag release — only
+    // let it through when the pointer barely moved (a real tap, not a drag).
+    if (dragDistanceRef.current) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
   }
 
   // The window's width and overhang are computed from the window's actual
@@ -112,8 +191,6 @@ export function WorkShowcase() {
   // from the rotation's pivot — well past what a fixed-height cap can
   // contain. Measuring the real window width (and the card's real
   // rendered height) keeps the math correct at every monitor size.
-  const windowRef = useRef<HTMLDivElement>(null)
-  const firstTileRef = useRef<HTMLAnchorElement>(null)
   const [metrics, setMetrics] = useState({ width: 0, cardHeight: 0 })
 
   useLayoutEffect(() => {
@@ -168,23 +245,9 @@ export function WorkShowcase() {
           transform: `rotate(${ROTATE_DEG}deg)`,
         }}
       >
-        <motion.div
+        <div
           ref={rowRef}
-          drag="x"
-          style={{ x }}
-          onDragStart={() => {
-            dragDistanceRef.current = false
-            userDraggedRef.current = true
-          }}
-          onDrag={handleDrag}
-          onClickCapture={(e) => {
-            // Framer still fires a click after a drag release — only let it
-            // through when the pointer barely moved (a real tap, not a drag).
-            if (dragDistanceRef.current) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-          }}
+          onClickCapture={handleClickCapture}
           className="absolute left-0 top-1/2 flex -translate-y-1/2 cursor-grab gap-2 will-change-transform active:cursor-grabbing"
         >
           {[0, 1, 2].map((copy) => (
@@ -205,7 +268,7 @@ export function WorkShowcase() {
               ))}
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   )

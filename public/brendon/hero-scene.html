@@ -215,10 +215,15 @@
   .lede{
     position:absolute; z-index:4;
     left:calc(46 * var(--u)); top:calc(360 * var(--u));
-    width:calc(340 * var(--u));
-    font-size:calc(16.5 * var(--u)); line-height:calc(22 * var(--u));
+    width:calc(480 * var(--u));
+    font-size:calc(14 * var(--u)); line-height:calc(18.5 * var(--u));
     font-weight:300; color:var(--ink-soft);
   }
+  /* Hard breaks at "medium" and "tech" so the lede always forms the same
+     compact block on desktop instead of reflowing wider at some viewport
+     widths and running under the "Explore my work" button — mobile ignores
+     these (see the max-width:900px block below) since it stacks the lede
+     in normal flow, where natural wrapping is already fine. */
 
   /* ── liquid-metal controls ─────────────────────────────────────────── */
   .pill-clip{
@@ -444,10 +449,13 @@
     box-shadow:0 calc(6 * var(--u)) calc(16 * var(--u)) rgba(16,21,13,.18);
     transition:transform .5s var(--ease-out), background .4s var(--ease);
   }
-  .knob--about{ right:auto; bottom:auto; width:calc(58 * var(--u)); height:calc(58 * var(--u)); }
+  .knob--about{
+    right:auto; bottom:auto; width:calc(58 * var(--u)); height:calc(58 * var(--u));
+    cursor:default; pointer-events:none;
+  }
   .card--stove .knob{ width:calc(54 * var(--u)); height:calc(54 * var(--u)); right:calc(26 * var(--u)); bottom:calc(26 * var(--u)); }
   .card .knob svg, .knob--about svg{ width:calc(19 * var(--u)); height:calc(19 * var(--u)); display:block; color:#3f453a; }
-  .card .knob:hover, .knob--about:hover{ transform:scale(1.1) rotate(8deg); background:#fff; }
+  .card .knob:hover{ transform:scale(1.1) rotate(8deg); background:#fff; }
   .card:hover{ box-shadow:0 calc(38 * var(--u)) calc(84 * var(--u)) rgba(16,21,13,.36); }
 
   /* ── scroll cue (z 4) ───────────────────────────────────────────────────── */
@@ -652,6 +660,10 @@
       font-size:max(15px, calc(17 * var(--u)));
       line-height:1.55;
     }
+    /* Mobile stacks the lede in normal flow below the headline, where it
+       never competes with the CTA button for horizontal space — let it wrap
+       on real word boundaries instead of forcing the desktop break points. */
+    .hero-lede-break{ display:none; }
 
     .pill-clip{
       width:calc(506 * var(--u)); height:calc(334 * var(--u));
@@ -670,7 +682,12 @@
     .card{ border-radius:calc(40 * var(--u)); }
     .card--about{ left:calc(34 * var(--u)); top:calc(1050 * var(--u)); width:calc(692 * var(--u)); height:calc(250 * var(--u)); }
     .card--about .label{ top:calc(96 * var(--u)); }
-    .card--about h2{ top:calc(124 * var(--u)); width:calc(600 * var(--u)); font-size:calc(16.5 * var(--u)); line-height:calc(20 * var(--u)); font-weight:500; }
+    /* width stops well short of the card's full inner width — the photo
+       (figure, below) sits top-right on this breakpoint at right:16u
+       width:224u, i.e. starting around x=452u, so the headline box has to
+       end before that or the text runs under the image instead of wrapping
+       around it. */
+    .card--about h2{ top:calc(124 * var(--u)); width:calc(380 * var(--u)); font-size:calc(15 * var(--u)); line-height:calc(19 * var(--u)); font-weight:500; }
     .card--stove{ left:calc(34 * var(--u)); top:calc(1324 * var(--u)); width:calc(692 * var(--u)); height:calc(250 * var(--u)); }
     .card--stove h2{ width:calc(400 * var(--u)); font-size:calc(32 * var(--u)); line-height:calc(36 * var(--u)); }
     /* Same image treatment as .card--about below — top-right, same box —
@@ -699,25 +716,25 @@
           <path d="M9.6 12.55h2.8v4.2c1.35.3 2.45 1.15 3.15 2.4-1.35.4-2.4.15-3.15-.4v4.15H9.6v-4.15c-.75.55-1.8.8-3.15.4.7-1.25 1.8-2.1 3.15-2.4v-4.2Z"/>
         </svg>
       </a>
-      <a class="dock-item is-active" data-dock data-spec data-burst href="#work" target="_top" style="--d:180ms" aria-label="Work">
+      <a class="dock-item is-active" data-dock data-spec data-burst href="#all-work" target="_top" onclick="event.preventDefault(); window.top.location.hash = 'all-work';" style="--d:180ms" aria-label="Work">
         <span class="glyph" aria-hidden="true">
           <svg viewBox="0 0 16 16"><path d="M8 14V9"/><path d="M8 9c0-2.4 1.7-4.3 4-4.3.2 2.6-1.6 4.6-4 4.3Z"/><path d="M8 10.5C7.9 8.4 6.4 6.8 4.4 6.8 4.3 8.9 5.9 10.6 8 10.5Z"/></svg>
         </span>
         <span>Work</span>
       </a>
-      <a class="dock-item" data-dock data-spec data-burst href="#about" target="_top" style="--d:230ms" aria-label="About">
+      <a class="dock-item" data-dock data-spec data-burst href="#about" target="_top" onclick="event.preventDefault(); window.top.location.hash = 'about';" style="--d:230ms" aria-label="About">
         <span class="glyph" aria-hidden="true">
           <svg viewBox="0 0 16 16"><path d="M1.6 12.4c2.4-3.4 4.3-5.1 5.7-5.1 2 0 3 3.6 5 3.6 1.1 0 1.9-.5 2.4-1.4"/><path d="M4.3 6.2C5.5 4.4 6.6 3.5 7.6 3.5c1.5 0 2.2 2.4 3.7 2.4"/></svg>
         </span>
         <span>About</span>
       </a>
-      <a class="dock-item" data-dock data-spec data-burst href="mailto:maestrobrendon@gmail.com" style="--d:280ms" aria-label="Contact">
+      <a class="dock-item" data-dock data-spec data-burst href="mailto:brendon@maestrobrendon.com" style="--d:280ms" aria-label="Contact">
         <span class="glyph" aria-hidden="true">
           <svg viewBox="0 0 16 16"><path d="M4 2.4h5.3L12 5.1v8.5H4z"/><path d="M9.2 2.4V5h2.7"/><path d="M6 8.4h4M6 10.8h2.8"/></svg>
         </span>
         <span>Contact</span>
       </a>
-      <a class="dock-item dock-item--enter" data-dock data-spec data-burst href="mailto:maestrobrendon@gmail.com" style="--d:330ms" aria-label="Hire Me">
+      <a class="dock-item dock-item--enter" data-dock data-spec data-burst href="mailto:brendon@maestrobrendon.com" style="--d:330ms" aria-label="Hire Me">
         <span class="glyph" aria-hidden="true">
           <svg viewBox="0 0 16 16"><path d="M6.6 2.5h5.1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6.6"/><path d="M2.6 8h6.6"/><path d="m7 5.6 2.4 2.4L7 10.4"/></svg>
         </span>
@@ -747,12 +764,12 @@
     </article>
 
     <span class="knob-float" style="--pd:10; --pr:2.2">
-      <button class="knob knob--about mask-circle" style="--d:1100ms" aria-label="Read about Brendon" onclick="window.top.location.href='#about'">
+      <span class="knob knob--about mask-circle" style="--d:1100ms" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 21v-7"/><path d="M12 14c0-3.3 2.4-6 5.5-6 .3 3.6-2.2 6.4-5.5 6Z"/>
           <path d="M12 16c-.1-2.9-2.2-5.2-4.9-5.2C6.8 13.7 9 16 12 16Z"/>
         </svg>
-      </button>
+      </span>
     </span>
 
     <!-- headline / lede / CTA / stats: on mobile this whole group becomes a
@@ -767,14 +784,14 @@
         <span><i style="--d:360ms">over decoration.</i></span>
       </h1>
 
-      <p class="lede mask" style="--d:480ms; --pd:14; --pr:1">7+ years leading design across fintech, Web3, e-commerce, and real estate — 80+ brands built.</p>
+      <p class="lede mask" style="--d:480ms; --pd:14; --pr:1">with over 7+ years crafting design strategy for large and medium<br class="hero-lede-break"> sized institutions in finance, Web3, crypto, real estate, Ai, tech<br class="hero-lede-break"> and in-house agencies.</p>
 
       <div class="pill-clip">
         <div class="pill mask" style="--d:600ms; --pd:15; --pr:1.4">
           <div class="liquid-stage liquid-stage--explore" data-liquid-metal="explore">
             <div class="liquid-plate plate" aria-hidden="true"></div>
             <canvas class="liquid-fx" aria-hidden="true"></canvas>
-            <button class="liquid-button liquid-button--explore btn" type="button" onclick="window.top.location.href='#work'">
+            <button class="liquid-button liquid-button--explore btn" type="button" onclick="window.top.location.hash='all-work'">
               <svg class="ico" viewBox="0 0 115 115" aria-hidden="true">
                 <g stroke="currentColor" stroke-width="11" stroke-linecap="round">
                   <path d="M14 34.5 H101"/>
@@ -782,7 +799,7 @@
                   <path d="M14 80.5 H68"/>
                 </g>
               </svg>
-              <span class="lbl">Explore the work</span>
+              <span class="lbl">Explore my work</span>
             </button>
           </div>
         </div>
@@ -821,7 +838,7 @@
           <span class="liquid-stage liquid-stage--play" data-liquid-metal="play">
             <span class="liquid-plate plate" aria-hidden="true"></span>
             <canvas class="liquid-fx" aria-hidden="true"></canvas>
-            <button class="liquid-button liquid-button--play btn" type="button" aria-label="Email Brendon" onclick="window.top.location.href='mailto:maestrobrendon@gmail.com'">
+            <button class="liquid-button liquid-button--play btn" type="button" aria-label="Scroll to next section" onclick="window.top.location.hash='about'">
               <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M8 5.2v13.6L19 12z" fill="currentColor"/>
               </svg>

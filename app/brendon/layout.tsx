@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Chakra_Petch, DM_Mono, Just_Me_Again_Down_Here, Inter } from "next/font/google"
 import "./brendon.css"
 import { personSchema } from "./lib/schema"
+import { SmoothScroll } from "./components/SmoothScroll"
 
 // Display font for the wordmark + "FEATURED WORKS" heading. The reference design
 // uses a licensed font called "Flux" (per its Figma file) that isn't available as a
@@ -61,6 +62,7 @@ export default function BrendonLayout({ children }: Readonly<{ children: React.R
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
       />
+      <SmoothScroll />
       {children}
     </div>
   )

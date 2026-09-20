@@ -236,7 +236,7 @@ export function HeroSkyLegacy() {
         </motion.p>
 
         <motion.a
-          href="mailto:maestrobrendon@gmail.com"
+          href="mailto:brendon@maestrobrendon.com"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.9 }}

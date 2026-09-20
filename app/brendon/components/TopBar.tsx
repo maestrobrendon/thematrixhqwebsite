@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
 import { Mail, Linkedin, Twitter, ExternalLink, Sparkle, Menu, X } from "lucide-react"
 import { useActiveSection } from "../lib/useActiveSection"
+import { gsap } from "@/lib/gsap-utils"
 
 const navItems = [
   { label: "About", id: "about", href: "#about" },
@@ -12,7 +12,7 @@ const navItems = [
 ]
 
 const socials = [
-  { label: "Email", shortLabel: "Email", href: "mailto:maestrobrendon@gmail.com", icon: Mail },
+  { label: "Email", shortLabel: "Email", href: "mailto:brendon@maestrobrendon.com", icon: Mail },
   { label: "LinkedIn", shortLabel: "in", href: "https://linkedin.com/in/brendonoleghe", icon: Linkedin },
   { label: "Twitter / X", shortLabel: "x", href: "https://twitter.com/maestrobrendon", icon: Twitter },
   { label: "Behance", shortLabel: "Be", href: "https://behance.net/maestrobrendon", icon: ExternalLink },
@@ -21,6 +21,24 @@ const socials = [
 export function TopBar() {
   const [open, setOpen] = useState(false)
   const active = useActiveSection(["about", "work", "contact"])
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = menuRef.current
+    if (!el) return
+    if (open) {
+      gsap.set(el, { display: "block" })
+      gsap.fromTo(el, { height: 0, opacity: 0 }, { height: "auto", opacity: 1, duration: 0.25, ease: "power2.out" })
+    } else {
+      gsap.to(el, {
+        height: 0,
+        opacity: 0,
+        duration: 0.25,
+        ease: "power2.in",
+        onComplete: () => gsap.set(el, { display: "none" }),
+      })
+    }
+  }, [open])
 
   return (
     <header className="selection-frame fixed top-0 inset-x-0 z-40">
@@ -87,44 +105,38 @@ export function TopBar() {
         </button>
       </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="sm:hidden overflow-hidden border-t border-black/10 bg-white/95"
-          >
-            <div className="px-4 py-4 flex flex-col gap-3">
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className={`text-sm font-medium ${active === item.id ? "text-(--brendon-magenta)" : "text-black/80"}`}
-                >
-                  {item.label}
-                </a>
-              ))}
-              <div className="flex items-center gap-2 pt-2">
-                {socials.map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    target={s.href.startsWith("http") ? "_blank" : undefined}
-                    rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                    aria-label={s.label}
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-black/60 bg-black/5"
-                  >
-                    <s.icon className="w-4 h-4" />
-                  </a>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div
+        ref={menuRef}
+        className="sm:hidden overflow-hidden border-t border-black/10 bg-white/95"
+        style={{ display: "none", height: 0, opacity: 0 }}
+      >
+        <div className="px-4 py-4 flex flex-col gap-3">
+          {navItems.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              onClick={() => setOpen(false)}
+              className={`text-sm font-medium ${active === item.id ? "text-(--brendon-magenta)" : "text-black/80"}`}
+            >
+              {item.label}
+            </a>
+          ))}
+          <div className="flex items-center gap-2 pt-2">
+            {socials.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target={s.href.startsWith("http") ? "_blank" : undefined}
+                rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                aria-label={s.label}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-black/60 bg-black/5"
+              >
+                <s.icon className="w-4 h-4" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
     </header>
   )
 }

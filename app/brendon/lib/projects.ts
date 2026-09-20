@@ -11,6 +11,8 @@ export type ArchiveProject = {
   title: string
   image: string
   video?: string
+  /** "cloudinary" (default) plays `video` in a native <video> tag; "youtube" embeds it in an iframe instead. */
+  videoProvider?: "cloudinary" | "youtube"
   href?: string
   tags: string[]
   date: string
@@ -173,6 +175,103 @@ export const archiveProjects: ArchiveProject[] = [
     title: "Severence Animation",
     image: "https://res.cloudinary.com/dusynu0kv/image/upload/v1766400691/sexz3hs7efranmkvuo9y.png",
     video: "https://res.cloudinary.com/dusynu0kv/video/upload/v1766400321/zz0gvweruizfybnvklbj.mp4",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  // From Brendon's own YouTube channel (@BrendonOleghe) — embedded via
+  // youtube-nocookie.com rather than played as a native <video>, since
+  // there's no self-hosted file. rel=0 + modestbranding=1 keep YouTube's own
+  // chrome as minimal as it can be; there's no download button on an
+  // embedded YouTube player to begin with (that only ever appears on
+  // youtube.com itself, for Premium accounts), so there's nothing further to
+  // disable there.
+  {
+    slug: "billboard-2",
+    title: "Billboard 2",
+    image: "https://i.ytimg.com/vi/F4uGBYAA6bs/hqdefault.jpg",
+    video: "https://www.youtube-nocookie.com/embed/F4uGBYAA6bs?rel=0&modestbranding=1",
+    videoProvider: "youtube",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "billboard",
+    title: "Billboard",
+    image: "https://i.ytimg.com/vi/PVMwUKB7nhM/hqdefault.jpg",
+    video: "https://www.youtube-nocookie.com/embed/PVMwUKB7nhM?rel=0&modestbranding=1",
+    videoProvider: "youtube",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "lens-for-good-motion-system-1",
+    title: "Lens for Good — Motion System 1",
+    image: "https://i.ytimg.com/vi/UVm3Cw8OTNk/hqdefault.jpg",
+    video: "https://www.youtube-nocookie.com/embed/UVm3Cw8OTNk?rel=0&modestbranding=1",
+    videoProvider: "youtube",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "lens-for-good-motion-system-2",
+    title: "Lens for Good — Motion System 2",
+    image: "https://i.ytimg.com/vi/L0BJpAxSSZU/hqdefault.jpg",
+    video: "https://www.youtube-nocookie.com/embed/L0BJpAxSSZU?rel=0&modestbranding=1",
+    videoProvider: "youtube",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "mayorfit-brand-awareness",
+    title: "Mayorfit Brand Awareness",
+    image: "https://i.ytimg.com/vi/CL9GzsxqZNo/hqdefault.jpg",
+    video: "https://www.youtube-nocookie.com/embed/CL9GzsxqZNo?rel=0&modestbranding=1",
+    videoProvider: "youtube",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "muvment-branding-motion-system",
+    title: "Muvment Branding — Motion System",
+    image: "https://i.ytimg.com/vi/7gO-a9G3PuU/hqdefault.jpg",
+    video: "https://www.youtube-nocookie.com/embed/7gO-a9G3PuU?rel=0&modestbranding=1",
+    videoProvider: "youtube",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "ankor-landscape",
+    title: "Ankor Landscape",
+    image: "https://i.ytimg.com/vi/k5xYf2GT8jU/hqdefault.jpg",
+    video: "https://www.youtube-nocookie.com/embed/k5xYf2GT8jU?rel=0&modestbranding=1",
+    videoProvider: "youtube",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "jakande-new-led",
+    title: "Jakande New LED",
+    image: "https://i.ytimg.com/vi/FHC7P4Z3EHo/hqdefault.jpg",
+    video: "https://www.youtube-nocookie.com/embed/FHC7P4Z3EHo?rel=0&modestbranding=1",
+    videoProvider: "youtube",
+    tags: ["Motion"],
+    date: "2025",
+    format: "video",
+  },
+  {
+    slug: "cr8torium-lens-for-good-motion",
+    title: "Cr8torium × Lens for Good — Motion",
+    image: "https://i.ytimg.com/vi/wTSvh2NRrV0/hqdefault.jpg",
+    video: "https://www.youtube-nocookie.com/embed/wTSvh2NRrV0?rel=0&modestbranding=1",
+    videoProvider: "youtube",
     tags: ["Motion"],
     date: "2025",
     format: "video",
