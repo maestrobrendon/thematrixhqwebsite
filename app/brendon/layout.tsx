@@ -45,7 +45,13 @@ const inter = Inter({
 // each real route (page.tsx, about/page.tsx) sets its own more specific
 // title/description/OG data that takes precedence over this.
 export const metadata: Metadata = {
-  metadataBase: new URL("https://brendon.thematrixhq.com"),
+  // maestrobrendon.com is the one canonical domain for this content (per the
+  // SEO strategy) — brendon.thematrixhq.com and thematrixhq.com/brendon serve
+  // the same pages via middleware.ts rewrites (not a redirect), so every
+  // relative canonical/OG URL below needs to resolve against this base to
+  // consolidate ranking signal onto the one domain instead of splitting it
+  // across three reachable hosts.
+  metadataBase: new URL("https://maestrobrendon.com"),
   title: "Brendon Oleghe — Multidisciplinary Designer",
   description:
     "Brendon Oleghe — multidisciplinary designer working across brand identity, design systems, motion, and web design.",

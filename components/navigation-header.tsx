@@ -107,7 +107,6 @@ const WHY_US_ITEMS = [
 const NAV_LEFT  = [{ label: "Our Work", href: "/work" }]
 const NAV_RIGHT = [
   { label: "Pricing", href: "/pricing" },
-  { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ]
 

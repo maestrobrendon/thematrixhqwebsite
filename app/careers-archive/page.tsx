@@ -40,7 +40,7 @@ function RoleRow({ role }: { role: typeof ROLES[0] }) {
   const deptColor = DEPT_COLORS[role.department]
 
   return (
-    <Link href={`/careers/${role.slug}`} style={{ textDecoration: "none", display: "block" }}>
+    <Link href={`/careers-archive/${role.slug}`} style={{ textDecoration: "none", display: "block" }}>
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "About Brendon Oleghe — Maestro Brendon",
     description: "Career, education, and side ventures behind the multidisciplinary designer known as Maestro Brendon.",
-    url: "https://brendon.thematrixhq.com/about",
+    url: "https://maestrobrendon.com/about",
     siteName: "Brendon Oleghe Portfolio",
     images: [{ url: seoAssets.ogImage, width: 1200, height: 630, alt: "Brendon Oleghe" }],
     type: "profile",

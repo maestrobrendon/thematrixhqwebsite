@@ -11,6 +11,7 @@ import { SkillsExpertise } from "./components/SkillsExpertise"
 import { ExperienceExpertise } from "./components/ExperienceExpertise"
 import { Footer } from "./components/Footer"
 import { seoAssets } from "./lib/assets"
+import { creativeWorksSchema } from "./lib/schema"
 
 export const metadata: Metadata = {
   title: "Brendon Oleghe (Maestro Brendon) — Multidisciplinary Designer & Brand Strategist",
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Brendon Oleghe — Multidisciplinary Designer & Brand Strategist",
     description: "7+ years leading design across fintech, Web3, e-commerce, and real estate. 80+ brands built.",
-    url: "https://brendon.thematrixhq.com",
+    url: "https://maestrobrendon.com",
     siteName: "Brendon Oleghe Portfolio",
     images: [{ url: seoAssets.ogImage, width: 1200, height: 630, alt: "Brendon Oleghe" }],
     type: "profile",
@@ -57,6 +58,13 @@ export default async function BrendonPortfolioPage() {
 
   return (
     <main className="relative bg-white text-(--brendon-ink) font-body">
+      {/* CreativeWork structured data, one per featured case study — see
+          ./lib/schema.ts for why each `url` points off-site. */}
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(creativeWorksSchema) }}
+      />
       <Hero sceneSrc={sceneSrc} />
       <About />
       <FeaturedWork />

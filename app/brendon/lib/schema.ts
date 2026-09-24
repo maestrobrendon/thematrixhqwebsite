@@ -1,4 +1,5 @@
 import { seoAssets } from "./assets"
+import { projects } from "./projects"
 
 // Structured data (JSON-LD) for Brendon Oleghe / Maestro Brendon — this is
 // what lets search engines resolve "Brendon Oleghe" and "Maestro Brendon" as
@@ -26,7 +27,9 @@ export const personSchema = {
   // against a resume file (none exists in this repo) — confirm before
   // treating it as authoritative beyond this site.
   alternateName: ["Maestro Brendon", "Brendon Imudiase Ideba-Oleghe"],
-  url: "https://brendon.thematrixhq.com",
+  // maestrobrendon.com is the declared canonical domain (see the metadataBase
+  // comment in app/brendon/layout.tsx) — this should always match that.
+  url: "https://maestrobrendon.com",
   jobTitle: "Multidisciplinary Designer & Brand Strategist",
   description:
     "Brendon Oleghe, known as Maestro Brendon, is a multidisciplinary designer and brand strategist with 7+ years leading design across fintech, Web3, e-commerce, and real estate — 80+ brands built.",
@@ -60,3 +63,33 @@ export const personSchema = {
     "Product Design",
   ],
 } as const
+
+// CreativeWork schema, one per featured case study — pulled straight from
+// lib/projects.ts's `projects` array so it can't drift out of sync with what
+// the homepage actually shows. Scoped to that array specifically (not
+// lib/projects.ts's `archiveProjects`) because those are the only entries
+// with a real, written `description` field — archive entries only have
+// tags/dates, and fabricating description text for them here would violate
+// this file's own ground rule above (schema must match established content,
+// not invent it).
+//
+// None of these projects have a page on this site — every one links out to
+// an external Behance case study or live site — so `url` intentionally
+// points there rather than to a URL this domain serves. That's a legitimate
+// schema.org pattern (describing a work without hosting its canonical page)
+// and is what actually lets a search/AI system associate each case study
+// with Brendon as its creator.
+export const creativeWorksSchema = projects.map((project) => ({
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  name: project.title,
+  description: project.description,
+  url: project.href,
+  image: project.image,
+  keywords: project.tags.join(", "),
+  creator: {
+    "@type": "Person",
+    name: "Brendon Oleghe",
+    url: "https://maestrobrendon.com",
+  },
+}))

@@ -18,12 +18,12 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
 
   if (isBrendonHost(host)) {
     // All Brendon hosts point at the same sitemap and the same canonical
-    // (brendon.thematrixhq.com, set via metadataBase) — a vanity domain like
-    // maestrobrendon.com is still fine to crawl, its pages just fold their
-    // ranking signal back into that one canonical via rel=canonical.
+    // (maestrobrendon.com, set via metadataBase in app/brendon/layout.tsx) —
+    // brendon.thematrixhq.com is still fine to crawl, its pages just fold
+    // their ranking signal back into that one canonical via rel=canonical.
     return {
       rules: { userAgent: "*", allow: "/" },
-      sitemap: "https://brendon.thematrixhq.com/sitemap.xml",
+      sitemap: "https://maestrobrendon.com/sitemap.xml",
     }
   }
 

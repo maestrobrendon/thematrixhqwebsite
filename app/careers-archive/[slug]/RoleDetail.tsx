@@ -95,7 +95,7 @@ export default function RoleDetail({ role }: { role: Role }) {
         <div style={{ maxWidth: 720, margin: "0 auto" }}>
 
           {/* Back */}
-          <Link href="/careers" style={{
+          <Link href="/careers-archive" style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             fontSize: 11, fontWeight: 700, letterSpacing: "0.12em",
             textTransform: "uppercase", color: INK_DIM, textDecoration: "none",
@@ -211,7 +211,7 @@ export default function RoleDetail({ role }: { role: Role }) {
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
               <ApplyButton href={applyHref} label={`Apply for ${role.title}`} />
-              <Link href="/careers" style={{
+              <Link href="/careers-archive" style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
                 padding: "14px 20px", border: `1px solid ${BORDER}`,
                 color: INK_MUTED, fontWeight: 600, fontSize: 13,

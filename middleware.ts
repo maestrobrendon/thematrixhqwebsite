@@ -9,9 +9,21 @@ function wikiSecret() {
   return new TextEncoder().encode(JWT_SECRET)
 }
 
+// robots.ts and sitemap.ts are root-level special files (generating
+// /robots.txt and /sitemap.xml) that already branch on the request's own
+// Host header internally — they must never be rewritten, or Next.js looks
+// for a nonexistent /brendon/robots.txt (etc.) and 404s instead of running
+// that branch at all. Confirmed by hitting /robots.txt and /sitemap.xml with
+// a maestrobrendon.com Host header before this bypass existed.
+const UNREWRITTEN_PATHS = new Set(["/robots.txt", "/sitemap.xml"])
+
 export async function middleware(req: NextRequest) {
   const hostname = req.headers.get("host") ?? ""
   const { pathname } = req.nextUrl
+
+  if (UNREWRITTEN_PATHS.has(pathname)) {
+    return NextResponse.next()
+  }
 
   // brendon.thematrixhq.com/*, maestrobrendon.com/* → /brendon/* (same content as /brendon)
   if (isBrendonHost(hostname)) {

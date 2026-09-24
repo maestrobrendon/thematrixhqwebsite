@@ -61,7 +61,7 @@ function RowATile({ project }: { project: ArchiveProject }) {
         >
           <img
             src={project.image}
-            alt={project.title}
+            alt={`${project.title} — ${project.tags.join(", ")} motion cover still`}
             draggable={false}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -92,7 +92,7 @@ function RowBCard({ project }: { project: ArchiveProject }) {
     >
       <img
         src={project.image}
-        alt={project.title}
+        alt={`${project.title} — ${project.tags.join(", ")} project cover`}
         draggable={false}
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
