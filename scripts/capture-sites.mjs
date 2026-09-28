@@ -17,8 +17,10 @@ if (!CLOUD || !KEY || !SECRET) {
 }
 
 const sites = [
-  { slug: "thematrixhq-com", url: "https://thematrixhq.com" },
-  { slug: "maestrobrendon-com", url: "https://maestrobrendon.com" },
+  { slug: "thetalkinghands-com", url: "https://thetalkinghands.com" },
+  { slug: "feedghana-org", url: "https://feedghana.org" },
+  { slug: "re-build-now", url: "https://re-build.now" },
+  { slug: "dottd-app", url: "https://dottd.app" },
 ]
 
 const outDir = "scratchpad-shots"

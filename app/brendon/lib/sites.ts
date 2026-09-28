@@ -1,4 +1,6 @@
-// "Built and shipped" data (spec §7, §5.5).
+// "Built and shipped" data (spec §7, §5.5). Ordered per Brendon: Talking
+// Hands, Feedghana, Re-Build, Inaara Woman, Moods and Motion, Assura Cash,
+// dottd — most senior/complete builds first.
 
 export type LiveSite = {
   title: string
@@ -13,16 +15,28 @@ export type LiveSite = {
 
 export const sites: LiveSite[] = [
   {
-    title: "Assura Cash",
-    url: "assuracash.com",
-    href: "https://assuracash.com",
-    description: "Lending platform. Designed and built end to end.",
-    tags: ["Design", "Build", "Next.js"],
-    // Full-page capture (spec §14.2), captured via scripts/capture-sites.mjs
-    // and hosted on the du5nhfcgd Cloudinary account with the rest of this
-    // rebuild's assets — tall enough for the hover-scroll travel effect.
-    screenshot: "https://res.cloudinary.com/du5nhfcgd/image/upload/f_auto,q_auto,w_1600/brendon/shots/assuracash-com",
-    verify: true,
+    title: "Talking Hands",
+    url: "thetalkinghands.com",
+    href: "https://thetalkinghands.com",
+    description: "Handmade crochet fashion label, worn loud. Designed, prototyped and built end to end.",
+    tags: ["Design", "Build", "E-commerce"],
+    screenshot: "https://res.cloudinary.com/du5nhfcgd/image/upload/f_auto,q_auto,w_1600/brendon/shots/thetalkinghands-com",
+  },
+  {
+    title: "Feedghana",
+    url: "feedghana.org",
+    href: "https://feedghana.org",
+    description: "Ghanaian nonprofit closing the learning, nutrition and skills gap. Designed, prototyped and built end to end.",
+    tags: ["Design", "Build", "Nonprofit"],
+    screenshot: "https://res.cloudinary.com/du5nhfcgd/image/upload/f_auto,q_auto,w_1600/brendon/shots/feedghana-org",
+  },
+  {
+    title: "Re-Build",
+    url: "re-build.now",
+    href: "https://re-build.now",
+    description: "African hardware studio that designs and prototypes physical products. I built and coded the site for a larger team's design.",
+    tags: ["Build"],
+    screenshot: "https://res.cloudinary.com/du5nhfcgd/image/upload/f_auto,q_auto,w_1600/brendon/shots/re-build-now",
   },
   {
     title: "Inaara Woman",
@@ -43,18 +57,23 @@ export const sites: LiveSite[] = [
     verify: true,
   },
   {
-    title: "The Matrix HQ",
-    url: "thematrixhq.com",
-    href: "https://thematrixhq.com",
-    description: "Site for the studio I led as creative director for five years.",
+    title: "Assura Cash",
+    url: "assuracash.com",
+    href: "https://assuracash.com",
+    description: "Lending platform. Designed and built end to end.",
     tags: ["Design", "Build", "Next.js"],
-    screenshot: "https://res.cloudinary.com/du5nhfcgd/image/upload/f_auto,q_auto,w_1600/brendon/shots/thematrixhq-com",
+    // Full-page capture (spec §14.2), captured via scripts/capture-sites.mjs
+    // and hosted on the du5nhfcgd Cloudinary account with the rest of this
+    // rebuild's assets — tall enough for the hover-scroll travel effect.
+    screenshot: "https://res.cloudinary.com/du5nhfcgd/image/upload/f_auto,q_auto,w_1600/brendon/shots/assuracash-com",
+    verify: true,
   },
   {
-    title: "This portfolio",
-    url: "maestrobrendon.com",
-    href: "https://maestrobrendon.com",
-    description: "Designed in Figma, built with Next.js, GSAP and Claude Code. Press I to inspect it.",
-    tags: ["Design", "Build", "GSAP"],
+    title: "dottd",
+    url: "dottd.app",
+    href: "https://dottd.app",
+    description: "Calendar-sharing app for tracking birthdays and anniversaries. A personal project, built and developed.",
+    tags: ["Build"],
+    screenshot: "https://res.cloudinary.com/du5nhfcgd/image/upload/f_auto,q_auto,w_1600/brendon/shots/dottd-app",
   },
 ]
