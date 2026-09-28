@@ -25,3 +25,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local screenshot captures from scripts/capture-sites.mjs
+scratchpad-shots/

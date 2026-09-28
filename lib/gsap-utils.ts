@@ -6,13 +6,15 @@ import ScrollTrigger from 'gsap/dist/ScrollTrigger'
 import TextPlugin from 'gsap/dist/TextPlugin'
 import Draggable from 'gsap/dist/Draggable'
 import InertiaPlugin from 'gsap/dist/InertiaPlugin'
+import SplitText from 'gsap/dist/SplitText'
+import Flip from 'gsap/dist/Flip'
 
 // Register all plugins once
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger, TextPlugin, Draggable, InertiaPlugin)
+  gsap.registerPlugin(ScrollTrigger, TextPlugin, Draggable, InertiaPlugin, SplitText, Flip)
 }
 
-export { gsap, ScrollTrigger, Draggable, InertiaPlugin }
+export { gsap, ScrollTrigger, Draggable, InertiaPlugin, SplitText, Flip }
 
 // ── Reusable scroll-reveal hooks ──────────────────────────────────────────
 // The GSAP equivalent of framer-motion's `initial + whileInView +
