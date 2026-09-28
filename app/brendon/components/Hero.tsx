@@ -1,259 +1,192 @@
 "use client"
 
-/**
- * Ported 3D hero — a procedural Three.js moss/root scene (adapted from the
- * "Sylva — Living Green" reference build), re-skinned with Brendon's own
- * copy and links. The heavy scene (shaders, geometry generation, dock nav,
- * liquid-metal buttons) lives as a self-contained static page at
- * /public/brendon/hero-scene.html and is mounted here via a same-origin
- * iframe, exactly like the original catalog's LandingPageFrame pattern —
- * that keeps its DOM/CSS/canvas fully isolated from the rest of the app.
- *
- * The previous sky-photo hero (wordmark, ruler, floating tags) is preserved
- * below as HeroSkyLegacy — unused, but left in place as a fail-safe. To
- * revert: swap `export function Hero()` back to the block below and drop
- * this iframe version.
- */
-export function Hero({ sceneSrc = "/brendon/hero-scene.html" }: { sceneSrc?: string }) {
-  return (
-    <section className="relative h-svh overflow-hidden">
-      {/* The hero's actual heading/copy lives inside the iframe document
-          below, which search engines don't attribute to *this* page's
-          heading outline — without this, the homepage has no real <h1> at
-          all. Visually hidden (not visually duplicated over the 3D scene)
-          but present in the DOM for crawlers and screen readers. */}
-      <h1 className="sr-only">
-        Brendon Oleghe — Multidisciplinary Designer &amp; Brand Strategist, also known as Maestro Brendon
-      </h1>
-      <iframe
-        src={sceneSrc}
-        title="Brendon Oleghe — Multidisciplinary Designer"
-        loading="eager"
-        className="absolute inset-0 h-full w-full border-0"
-      />
-    </section>
-  )
-}
+// Hero (spec §5.1) — native replacement for the v1 iframe. One orchestrated
+// load moment: dock drops, selection frame draws, the kinetic name rises and
+// stretches open, then the statement/CTAs/photo/notes settle in.
+import { useEffect, useRef, useState } from "react"
+import { gsap, ScrollTrigger, SplitText, Draggable } from "@/lib/gsap-utils"
+import { useKineticType } from "../lib/useKineticType"
 
-/* ─── HeroSkyLegacy — the original sky-photo hero, kept as a fail-safe ───
+export function Hero() {
+  const heroRef = useRef<HTMLElement>(null)
+  const nameSelRef = useRef<HTMLHeadingElement>(null)
+  const sizeRef = useRef<HTMLSpanElement>(null)
+  const [clock, setClock] = useState("--:--")
+  const scrollSquashRef = useRef(0)
+  const heroBaseRef = useRef(typeof window !== "undefined" && innerWidth < 600 ? 86 : 100)
 
-import { useRef, type MouseEvent } from "react"
-import Image from "next/image"
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
-import { ChevronsRight } from "lucide-react"
-import { TopBar } from "./TopBar"
-import { RulerBar } from "./RulerBar"
-import { LiveClock } from "./LiveClock"
-import { StickyNote } from "./StickyNote"
-import { heroAssets } from "../lib/assets"
+  const { ref: nameRef, setActive } = useKineticType<HTMLSpanElement>({
+    base: () => heroBaseRef.current - scrollSquashRef.current,
+    gBase: 760,
+    wAmp: 34,
+    gAmp: 140,
+  })
 
-type Tag = {
-  key: string
-  src: string
-  alt: string
-  w: number
-  h: number
-  className: string
-  rotate: number
-  pulse?: boolean
-}
+  // Lagos local clock (spec §5.1 status row)
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Africa/Lagos" })
+    const tick = () => setClock(fmt.format(new Date()))
+    tick()
+    const id = setInterval(tick, 15000)
+    return () => clearInterval(id)
+  }, [])
 
-// left/top are the CENTER of each tag, as a percentage of the hero container —
-// matched against the reference composition — combined with a -50%/-50% translate
-// so the relationship to the wordmark holds at any viewport size.
-const tags: Tag[] = [
-  {
-    key: "branding",
-    src: heroAssets.tagBranding,
-    alt: "Branding",
-    w: 186,
-    h: 103,
-    className: "left-[36%] top-[16%] w-28 md:w-32",
-    rotate: 5,
-  },
-  {
-    key: "web-design",
-    src: heroAssets.tagWebDesign,
-    alt: "Web Design",
-    w: 188,
-    h: 113,
-    className: "left-[66%] top-[38%] w-28 md:w-32",
-    rotate: -3,
-  },
-  {
-    key: "motion",
-    src: heroAssets.tagMotion,
-    alt: "Motion",
-    w: 187,
-    h: 116,
-    className: "left-[26%] top-[54%] w-28 md:w-32",
-    rotate: -4,
-  },
-  {
-    key: "remote",
-    src: heroAssets.tagRemote,
-    alt: "Remote",
-    w: 342,
-    h: 178,
-    className: "left-[71%] top-[58%] w-28 md:w-32",
-    rotate: 4,
-    pulse: true,
-  },
-  {
-    key: "art-direction",
-    src: heroAssets.tagArtDirection,
-    alt: "Art Direction",
-    w: 449,
-    h: 146,
-    className: "left-[9%] top-[73%] w-32 md:w-36",
-    rotate: -6,
-    pulse: true,
-  },
-]
+  // Live W×H readout on the wordmark's selection frame
+  useEffect(() => {
+    const sel = nameSelRef.current
+    const sizeEl = sizeRef.current
+    if (!sel || !sizeEl) return
+    const ro = new ResizeObserver(([e]) => {
+      const b = e.borderBoxSize?.[0]
+      sizeEl.textContent = `${Math.round(b ? b.inlineSize : e.contentRect.width)} × ${Math.round(b ? b.blockSize : e.contentRect.height)}`
+    })
+    ro.observe(sel)
+    return () => ro.disconnect()
+  }, [])
 
-function HeroTag({ tag }: { tag: Tag }) {
-  const boundsRef = useRef<HTMLDivElement>(null)
+  // Scroll squash + kinetic pause off-screen
+  useEffect(() => {
+    const st = ScrollTrigger.create({
+      trigger: heroRef.current,
+      start: "top top",
+      end: "bottom top",
+      onUpdate: (s: any) => (scrollSquashRef.current = s.progress * 44),
+      onToggle: (s: any) => setActive(s.isActive || scrollY < innerHeight),
+    })
+    const onResize = () => (heroBaseRef.current = innerWidth < 600 ? 86 : 100)
+    addEventListener("resize", onResize)
+    return () => {
+      st.kill()
+      removeEventListener("resize", onResize)
+    }
+  }, [setActive])
 
-  return (
-    <div ref={boundsRef} className={`hidden sm:block absolute z-20 -translate-x-1/2 -translate-y-1/2 ${tag.className}`}>
-      <StickyNote dragConstraints={boundsRef} rotate={tag.rotate} pulse={tag.pulse} className="w-full">
-        <Image src={tag.src} alt={tag.alt} width={tag.w} height={tag.h} className="w-full h-auto" draggable={false} />
-      </StickyNote>
-    </div>
-  )
-}
+  // Sticky notes: draggable + inertia, hero-bounded (pointer:fine only)
+  useEffect(() => {
+    if (!matchMedia("(pointer: fine)").matches) return
+    const draggables = Draggable.create("[data-note]", {
+      type: "x,y",
+      bounds: heroRef.current,
+      inertia: true,
+      zIndexBoost: true,
+      onPress() {
+        gsap.to(this.target, { scale: 1.08, boxShadow: "4px 8px 0 rgba(0,0,0,.2),0 24px 40px rgba(0,0,0,.3)", duration: 0.25 })
+      },
+      onRelease() {
+        gsap.to(this.target, { scale: 1, boxShadow: "2px 3px 0 rgba(0,0,0,.18),0 12px 24px rgba(0,0,0,.18)", duration: 0.4 })
+      },
+    })
+    return () => draggables.forEach((d: any) => d.kill())
+  }, [])
 
-export function HeroSkyLegacy() {
-  const sectionRef = useRef<HTMLDivElement>(null)
-
-  // Only the ruler tracks the cursor — everything else in the hero stays put.
-  const rawX = useMotionValue(0)
-  const mx = useSpring(rawX, { stiffness: 120, damping: 20, mass: 0.4 })
-  const rulerX = useTransform(mx, [-0.5, 0.5], [-90, 90])
-
-  function handleMouseMove(e: MouseEvent<HTMLDivElement>) {
-    const rect = sectionRef.current?.getBoundingClientRect()
-    if (!rect) return
-    rawX.set((e.clientX - rect.left) / rect.width - 0.5)
-  }
-
-  function handleMouseLeave() {
-    rawX.set(0)
-  }
+  // The one orchestrated load moment
+  useEffect(() => {
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches
+    let split: ReturnType<typeof SplitText.create> | undefined
+    let tl: gsap.core.Timeline | undefined
+    let cancelled = false
+    const run = () => {
+      if (cancelled) return
+      const mob = innerWidth <= 860
+      if (reduced) {
+        gsap.set(".name-sel>.frame,.name-sel>.h,.name-label,.name-size", { opacity: 1 })
+        return
+      }
+      split = SplitText.create(".statement", { type: "lines", mask: "lines", linesClass: "ln" })
+      const chars = nameRef.current ? Array.from(nameRef.current.querySelectorAll(".ch")) : []
+      tl = gsap.timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
+      tl.set(nameRef.current, { clipPath: "inset(-30% -12% 0% -12%)" })
+        .from(".dock", { y: mob ? 24 : -24, opacity: 0, duration: 1 }, 0)
+        .fromTo(".name-sel>.frame", { opacity: 1, scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 1, ease: "expo.inOut" }, 0.1)
+        .from(chars, { yPercent: 115, duration: 1.2, stagger: 0.05 }, 0.35)
+        .fromTo(chars, { "--w": 50 }, { "--w": heroBaseRef.current, duration: 1.4, stagger: 0.05, ease: "expo.inOut", immediateRender: false }, 0.35)
+        .fromTo(".name-sel>.h", { opacity: 1, scale: 0 }, { scale: 1, duration: 0.5, stagger: 0.06, ease: "back.out(3)" }, 1.0)
+        .to(".name-label,.name-size", { opacity: 1, duration: 0.4, stagger: 0.1 }, 1.15)
+        .from(split.lines, { yPercent: 105, duration: 1, stagger: 0.08 }, 0.95)
+        .from(".hero-cta .btn", { y: 18, opacity: 0, duration: 0.9, stagger: 0.08 }, 1.1)
+        .from(".hero-photo", { y: 60, rotate: 16, opacity: 0, duration: 1.3 }, 0.7)
+        .from("[data-note]", { scale: 0.4, opacity: 0, duration: 0.8, stagger: 0.12, ease: "back.out(2.2)" }, 1.35)
+        .from(".hero-top > *", { opacity: 0, y: -8, duration: 0.8, stagger: 0.08 }, 0.9)
+        .set(nameRef.current, { clipPath: "none" })
+    }
+    ;(document.fonts?.ready ?? Promise.resolve()).then(run)
+    return () => {
+      cancelled = true
+      tl?.kill()
+      split?.revert()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
-    <section
-      ref={sectionRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative h-svh overflow-hidden"
-    >
-      <Image src={heroAssets.sky} alt="" fill priority className="object-cover" sizes="100vw" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-transparent" />
-
-      <TopBar />
-      <RulerBar x={rulerX} />
-
-      {/* Floating avatar bubbles — percentage-positioned so they hold their
-          relationship to the wordmark at any viewport size. z-20 so they sit
-          in front of the wordmark, which reads as sitting "behind" the canvas. }
-      <div className="absolute z-20 left-[10%] top-[32%] hidden sm:block -translate-x-1/2 -translate-y-1/2">
-        <div className="w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-white shadow-md">
-          <Image src={heroAssets.avatarLeft} alt="" width={44} height={44} className="w-full h-full object-cover" />
-        </div>
-      </div>
-      <div className="absolute z-20 left-[86%] top-[53%] hidden sm:block -translate-x-1/2 -translate-y-1/2">
-        <div className="w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-white shadow-md">
-          <Image src={heroAssets.avatarRight} alt="" width={44} height={44} className="w-full h-full object-cover" />
+    <header className="hero" id="top" data-ix="Hero / Landing" ref={heroRef} data-kinetic-zone="">
+      <div className="hero-guides" aria-hidden="true">
+        <div className="wrap">
+          {Array.from({ length: 12 }).map((_, i) => <i key={i} />)}
         </div>
       </div>
 
-      {/* Floating draggable tags — hidden on touch/mobile. Static in place;
-          only the ruler bar tracks the cursor. z-20, same reason as the avatars. }
-      {tags.map((tag) => (
-        <HeroTag key={tag.key} tag={tag} />
-      ))}
+      <div className="wrap hero-top">
+        <p className="status">
+          <span className="dot" aria-hidden="true" />
+          Open to senior brand &amp; product design roles
+        </p>
+        <p className="loc">
+          Lagos, <span className="clock">{clock}</span> WAT, working remote worldwide
+        </p>
+      </div>
 
-      {/* z-0: the wordmark inside this column must render behind the tags/avatars above. }
-      <div className="relative z-0 h-full flex flex-col items-center justify-center px-4 md:px-6 text-center">
-        <LiveClock className="font-mono-accent text-sm text-black/60 mb-6" />
-
-        {/* "my name is" handwritten label }
-        <motion.p
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="font-hand text-black/70 -mb-2 -rotate-2"
-          style={{ fontSize: "clamp(1.75rem, 6vw, 2.25rem)" }}
-        >
-          my name is
-        </motion.p>
-
-        {/* Wordmark }
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15 }}
-          className="relative px-6 py-2 mt-2"
-        >
-          <Image
-            src={heroAssets.wordmarkBorder}
-            alt=""
-            fill
-            className="pointer-events-none select-none"
-            style={{ objectFit: "fill" }}
+      <div className="wrap hero-body">
+        <figure className="hero-photo" data-ix="Photo card / Polaroid">
+          <img
+            src="https://res.cloudinary.com/du5nhfcgd/image/upload/f_auto,q_auto,w_480/v1788116881/Cinematic_Discipline_in_the_Study_n3xoqo.png"
+            alt="Brendon at his desk in Lagos"
+            width={240}
+            height={300}
+            fetchPriority="high"
           />
-          <h1
-            className="font-display tracking-tight text-(--brendon-ink)"
-            style={{ fontSize: "clamp(2.75rem, 12.6vw, 6.5rem)" }}
-          >
-            BRENDON
+          <figcaption>Lagos, 2026</figcaption>
+        </figure>
+
+        <div className="name-row">
+          <h1 className="sel name-sel" id="nameSel" ref={nameSelRef}>
+            <span className="frame" aria-hidden="true" />
+            <span className="h" aria-hidden="true" />
+            <span className="h" aria-hidden="true" />
+            <span className="h" aria-hidden="true" />
+            <span className="h" aria-hidden="true" />
+            <span className="name-label" aria-hidden="true">Wordmark / Kinetic</span>
+            <span className="name" ref={nameRef}>Brendon</span>
+            <span className="sr-only"> Oleghe, senior brand and product designer</span>
+            <span className="name-size" ref={sizeRef} aria-hidden="true">0 × 0</span>
           </h1>
-        </motion.div>
+        </div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-4 font-medium uppercase tracking-[0.2em] text-black/60 flex items-center gap-2"
-          style={{ fontSize: "clamp(1rem, 4.1vw, 1.125rem)" }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          Multidisciplinary Designer &amp; Brand Strategist
-        </motion.p>
-
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.75 }}
-          className="mt-6 max-w-2xl font-medium text-(--brendon-ink) text-center"
-          style={{ fontSize: "clamp(1.5rem, 6.9vw, 1.875rem)", letterSpacing: "-0.84px" }}
-        >
-          I turn{" "}
-          <Image src={heroAssets.iconSpiralDart} alt="" width={28} height={28} className="inline-block w-6 h-6 md:w-7 md:h-7 align-middle mx-1" />
-          {" "}ideas into brands people remember.{" "}
-          <Image src={heroAssets.iconFlower} alt="" width={24} height={24} className="inline-block w-5 h-5 md:w-6 md:h-6 align-middle mx-1" />
-        </motion.p>
-
-        <motion.a
-          href="mailto:brendon@maestrobrendon.com"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.9 }}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.97 }}
-          className="mt-8 inline-flex items-stretch bg-black text-white shadow-lg overflow-hidden"
-        >
-          <span className="flex items-center justify-center w-11 bg-(--brendon-cyan) text-black">
-            <ChevronsRight className="w-5 h-5" />
-          </span>
-          <span className="flex items-center px-6 py-3 font-mono-accent text-xs font-medium uppercase tracking-wider">
-            Contact Me
-          </span>
-        </motion.a>
+        <div className="hero-grid">
+          <p className="statement">
+            <b>I design with intent over decoration.</b>{" "}
+            <span className="soft">Brand, product and motion as one system, then I build it and ship it.</span>
+          </p>
+          <div className="hero-cta">
+            <a className="btn" href="#work" data-cursor="Scroll to work">
+              <span className="roll"><span>See selected work</span><span>See selected work</span></span>
+            </a>
+            <a className="btn btn--ghost" href="https://www.maestrobrendon.com/BRENDON-OLEGHE-RESUME.pdf" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" />
+              </svg>
+              <span className="roll">
+                <span><span className="dl-word">Download </span>résumé</span>
+                <span>PDF, 1 page</span>
+              </span>
+            </a>
+          </div>
+          <div className="note note--b" data-note aria-hidden="true">7+ years leading design</div>
+        </div>
       </div>
-    </section>
+
+      <div className="note note--a" data-note aria-hidden="true">80+ brands built</div>
+      <a className="scroll-cue" href="#about" aria-label="Scroll to about">Scroll<i /></a>
+    </header>
   )
 }
-
-──────────────────────────────────────────────────────────────────────── */

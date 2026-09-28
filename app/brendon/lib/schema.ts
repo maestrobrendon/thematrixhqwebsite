@@ -1,5 +1,5 @@
 import { seoAssets } from "./assets"
-import { projects } from "./projects"
+import { cases } from "./cases"
 
 // Structured data (JSON-LD) for Brendon Oleghe / Maestro Brendon — this is
 // what lets search engines resolve "Brendon Oleghe" and "Maestro Brendon" as
@@ -64,29 +64,23 @@ export const personSchema = {
   ],
 } as const
 
-// CreativeWork schema, one per featured case study — pulled straight from
-// lib/projects.ts's `projects` array so it can't drift out of sync with what
-// the homepage actually shows. Scoped to that array specifically (not
-// lib/projects.ts's `archiveProjects`) because those are the only entries
-// with a real, written `description` field — archive entries only have
-// tags/dates, and fabricating description text for them here would violate
-// this file's own ground rule above (schema must match established content,
-// not invent it).
+// CreativeWork schema, one per selected-work case study — pulled straight
+// from lib/cases.ts so it can't drift out of sync with what the homepage's
+// CaseStack section actually shows.
 //
-// None of these projects have a page on this site — every one links out to
-// an external Behance case study or live site — so `url` intentionally
-// points there rather than to a URL this domain serves. That's a legitimate
-// schema.org pattern (describing a work without hosting its canonical page)
-// and is what actually lets a search/AI system associate each case study
-// with Brendon as its creator.
-export const creativeWorksSchema = projects.map((project) => ({
+// `url` points at this site's own /work/[slug] page (app/brendon/work/[slug]/
+// page.tsx) now that one exists per case, rather than the external Behance/
+// live-site link — the on-site page is the canonical, hosted description of
+// the work; the external link is still the CTA inside that page and the
+// CaseSheet overlay.
+export const creativeWorksSchema = cases.map((c) => ({
   "@context": "https://schema.org",
   "@type": "CreativeWork",
-  name: project.title,
-  description: project.description,
-  url: project.href,
-  image: project.image,
-  keywords: project.tags.join(", "),
+  name: c.title,
+  description: c.summary,
+  url: `https://maestrobrendon.com/work/${c.slug}`,
+  image: c.image,
+  keywords: c.disciplines.join(", "),
   creator: {
     "@type": "Person",
     name: "Brendon Oleghe",

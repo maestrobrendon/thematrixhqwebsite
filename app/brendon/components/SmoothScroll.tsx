@@ -1,22 +1,41 @@
 "use client"
 
+// Lenis-driven smooth scroll (spec §6.2), replacing v1's
+// ScrollTrigger.normalizeScroll(true). Stores the instance on
+// window.__brendonLenis so lib/scroll.ts's goTo()/lockScroll() and every
+// interactive component (case stack, command menu, dialogs) can drive it
+// without each one creating its own instance.
 import { useEffect } from "react"
-import { ScrollTrigger } from "@/lib/gsap-utils"
+import Lenis from "lenis"
+import { gsap, ScrollTrigger } from "@/lib/gsap-utils"
 
-// Native wheel/touch scrolling is inconsistent across browsers (choppy
-// momentum on trackpads, address-bar-driven jumps on mobile Safari, etc.) —
-// that inconsistency is what reads as "not smooth" independent of any of the
-// page's own reveal animations. ScrollTrigger.normalizeScroll is GSAP's own
-// fix for exactly this: it takes over low-level scroll-delta handling so the
-// browser produces one consistent, smooth scroll everywhere, without
-// replacing native scrolling with a virtual proxy (unlike ScrollSmoother) —
-// so it doesn't disturb fixed positioning, anchor/hash navigation, or the
-// existing framer-motion animations elsewhere on the page.
 export function SmoothScroll() {
   useEffect(() => {
-    const normalizer = ScrollTrigger.normalizeScroll(true)
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    const lenis = new Lenis({ lerp: 0.1, anchors: false })
+    lenis.on("scroll", ScrollTrigger.update)
+    const raf = (time: number) => lenis.raf(time * 1000)
+    gsap.ticker.add(raf)
+    gsap.ticker.lagSmoothing(0)
+    window.__brendonLenis = lenis
+
+    function onAnchorClick(e: MouseEvent) {
+      const a = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement | null
+      if (!a) return
+      const id = a.getAttribute("href")
+      if (!id || id.length < 2 || !document.querySelector(id)) return
+      e.preventDefault()
+      if (id === "#top") lenis.scrollTo(0, { duration: 1.3 })
+      else lenis.scrollTo(id, { duration: 1.3 })
+    }
+    document.addEventListener("click", onAnchorClick)
+
     return () => {
-      normalizer?.kill()
+      document.removeEventListener("click", onAnchorClick)
+      gsap.ticker.remove(raf)
+      lenis.destroy()
+      window.__brendonLenis = undefined
     }
   }, [])
 

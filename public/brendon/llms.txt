@@ -1,18 +1,22 @@
 # Brendon Oleghe (Maestro Brendon)
 
-> Brendon Oleghe, known professionally as Maestro Brendon, is a multidisciplinary designer and brand strategist with 7+ years leading design across fintech, Web3, e-commerce, and real estate — 80+ brands built. Work spans brand identity, design systems, motion design, and product/web design, based remotely and working globally.
+> Brendon Oleghe, known professionally as Maestro Brendon, is a senior brand and product designer with 7+ years leading design across fintech, Web3, e-commerce and real estate — 80+ brands built. He designs brand, product and motion as one system, then builds and ships it in Next.js, GSAP and Claude Code.
 
 ## Key pages
 
-- [Portfolio homepage](https://maestrobrendon.com/): Featured case studies, skills, and full project archive.
+- [Portfolio homepage](https://maestrobrendon.com/): Selected work, built-and-shipped live products, motion reel, archive, process and experience.
 - [About](https://maestrobrendon.com/about): Career history (HEED/The Render Unit, Growmodo, The Matrix HQ, Quintes, LEDGA), education (University of Benin), and side ventures.
 
-## Featured case studies
+## Selected work
 
-- [Vaultra Finance — Brand Identity](https://www.behance.net/gallery/244030983/Vaultra-Finance-Brand-Identity): A full brand identity system for a finance platform built to feel secure, modern, and trustworthy.
-- [Giftlyft — Brand Identity & Packaging](https://www.behance.net/gallery/244047577/Giftlyft-Brand-Identity-Packaging-Design): Brand identity and packaging design for a gifting platform designed to feel joyful and giftable.
-- [LEDGA Finance — Full Branding](https://www.behance.net/gallery/209969707/LEDGA-Full-Branding-and-Identity-Design): Full branding and identity design for a finance platform, built as a cohesive design system.
-- [Sheikh Meow — Brand & Social Identity](https://www.behance.net/gallery/234060663/Luxury-Meme-Token-Branding-Social-Media-Identity): Luxury meme token branding and social media identity for a Web3 project.
+- [Vaultra Finance — Brand Identity](https://www.behance.net/gallery/244030983/Vaultra-Finance-Brand-Identity): A brand system for a finance platform that had to feel secure without feeling cold.
+- [LEDGA — Full Branding](https://www.behance.net/gallery/209969707/LEDGA-Full-Branding-and-Identity-Design): An end-to-end identity and product UI for a digital banking platform.
+- [Assura Cash](https://assuracash.com): A lending product site, designed and built to explain the offer in seconds.
+- [Giftlyft — Brand Identity & Packaging](https://www.behance.net/gallery/244047577/Giftlyft-Brand-Identity-Packaging-Design): Brand identity and packaging for a gifting platform designed to feel joyful and giftable.
+
+## Built and shipped
+
+- [Assura Cash](https://assuracash.com), [Inaara Woman](https://inaarawoman.com), [Moods and Motion](https://moodsandmotion.vercel.app), [The Matrix HQ](https://thematrixhq.com), and this portfolio — all designed and built by Brendon.
 
 ## Elsewhere
 

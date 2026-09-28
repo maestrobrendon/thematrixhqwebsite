@@ -1,87 +1,72 @@
 "use client"
 
-import Image from "next/image"
-import { Mail, ArrowUpRight } from "lucide-react"
+// Contact / footer (spec §5.10) — kinetic email, click to copy.
+import { useEffect, useState } from "react"
 import { footerAssets } from "../lib/assets"
-import { useReveal } from "@/lib/gsap-utils"
+import { useKineticType } from "../lib/useKineticType"
+import { copyToClipboard } from "../lib/copy"
 
-const socials = [
-  { label: "Behance", href: "https://behance.net/maestrobrendon" },
-  { label: "Dribbble", href: "https://dribbble.com/maestrobrendon" },
-  { label: "LinkedIn", href: "https://linkedin.com/in/brendonoleghe" },
-  { label: "Twitter", href: "https://twitter.com/maestrobrendon" },
-]
+const EMAIL = "brendon@maestrobrendon.com"
 
 export function Footer() {
-  const eyebrowRef = useReveal<HTMLSpanElement>({ duration: 0.5 })
-  const headingRef = useReveal<HTMLHeadingElement>({ y: 16, duration: 0.6, delay: 0.1 })
-  const bodyRef = useReveal<HTMLParagraphElement>({ duration: 0.6, delay: 0.2 })
-  const ctaRef = useReveal<HTMLDivElement>({ y: 10, duration: 0.6, delay: 0.3 })
+  const [copied, setCopied] = useState(false)
+  const [clock, setClock] = useState("--:--")
+
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Africa/Lagos" })
+    const tick = () => setClock(fmt.format(new Date()))
+    tick()
+    const id = setInterval(tick, 15000)
+    return () => clearInterval(id)
+  }, [])
+  const { ref: mailRef } = useKineticType<HTMLButtonElement>({
+    base: () => (innerWidth < 600 ? 54 : 72),
+    gBase: 700,
+    wAmp: 50,
+    gAmp: 200,
+    radius: 0.12,
+  })
+
+  function handleClick() {
+    copyToClipboard(EMAIL, "Email copied: " + EMAIL)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2200)
+  }
 
   return (
-    <footer id="contact" className="relative isolate text-white">
-      {/* Full-bleed cover background behind the whole footer — sized to the
-          footer's own (content-driven) height via absolute inset-0, not a
-          fixed aspect-ratio box, so it always covers edge to edge with no
-          gap or hard edge regardless of how tall the content stack gets. */}
-      <div className="absolute inset-0 -z-10 bg-(--brendon-ink)">
-        {/* Dimmed so the dark base behind it shows through everywhere, not
-            just at the bottom — the gradient below still deepens toward the
-            bottom for the CTAs/socials, but the top (where "get in touch"
-            and the heading sit, over open sky) needed darkening too. */}
-        <Image src={footerAssets.hillStool} alt="" fill className="object-cover opacity-60" sizes="100vw" />
-        {/* Required for text legibility, not decorative — plain white text
-            on the sky/grass reads poorly in several spots without this. */}
-        <div
-          aria-hidden
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.8) 100%)" }}
-        />
+    <footer className="contact" id="contact" aria-labelledby="contact-h" data-ix-gap data-kinetic-zone="">
+      <div className="contact-bg" aria-hidden="true">
+        <img src={footerAssets.hillStool} alt="" loading="lazy" />
       </div>
-
-      <div className="max-w-3xl mx-auto px-6 py-16 md:py-20 text-center">
-        <span ref={eyebrowRef} className="font-hand text-xl text-white/60">
-          get in touch
-        </span>
-
-        <h2 ref={headingRef} className="font-display text-3xl sm:text-4xl md:text-5xl tracking-tight mt-2 mb-6">
-          LET&apos;S CREATE SOMETHING{" "}
-          <span style={{ color: "var(--brendon-cyan)" }}>AMAZING</span> TOGETHER
-        </h2>
-
-        <p ref={bodyRef} className="text-white/60 max-w-lg mx-auto mb-10">
-          I&apos;m always open to discussing new projects, creative ideas, or opportunities to be part of your
-          vision. Let&apos;s work together to bring your brand to life.
+      <div className="wrap">
+        <h2 className="sr-only" id="contact-h">Contact</h2>
+        <p className="ask">Hiring a senior designer? Let&apos;s talk.</p>
+        <button className="mail" ref={mailRef} data-cursor="Copy email" aria-describedby="copyHint" onClick={handleClick}>
+          {EMAIL}
+        </button>
+        <p className={`copy-hint${copied ? " copied" : ""}`} id="copyHint" aria-live="polite">
+          <span className="state"><span>Click to copy</span><span>Copied to clipboard</span></span>
         </p>
-
-        <div ref={ctaRef} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href="mailto:brendon@maestrobrendon.com"
-            className="inline-flex items-center gap-2 px-8 py-3.5 text-sm font-medium text-white"
-            style={{ backgroundColor: "var(--brendon-magenta)" }}
-          >
-            <Mail className="w-4 h-4" />
-            Email Me
+        <div className="contact-actions">
+          <a className="btn" href={`mailto:${EMAIL}`}>
+            <span className="roll"><span>Email me</span><span>Opens your mail app</span></span>
           </a>
-          <a
-            href="/BRENDON-OLEGHE-RESUME.pdf"
-            download
-            className="inline-flex items-center gap-2 px-8 py-3.5 text-sm font-medium border border-white/25 hover:bg-white/10 transition-colors"
-          >
-            Download Resume
-            <ArrowUpRight className="w-4 h-4" />
+          <a className="btn btn--ghost" href="https://www.maestrobrendon.com/BRENDON-OLEGHE-RESUME.pdf" target="_blank" rel="noopener">
+            <span className="roll"><span>Download résumé</span><span>PDF, 1 page</span></span>
+          </a>
+          <a className="btn btn--ghost" href="https://linkedin.com/in/brendonoleghe" target="_blank" rel="noopener">
+            <span className="roll"><span>LinkedIn</span><span>linkedin.com/in/brendonoleghe</span></span>
           </a>
         </div>
-
-        <div className="mt-14 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          {socials.map((s) => (
-            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-white transition-colors">
-              {s.label}
-            </a>
-          ))}
+        <div className="foot">
+          <p>© {new Date().getFullYear()} Brendon Oleghe. Lagos, <span className="clock">{clock}</span> WAT</p>
+          <nav aria-label="Social">
+            <a href="https://behance.net/maestrobrendon" target="_blank" rel="noopener">Behance</a>
+            <a href="https://dribbble.com/maestrobrendon" target="_blank" rel="noopener">Dribbble</a>
+            <a href="https://twitter.com/maestrobrendon" target="_blank" rel="noopener">X / Twitter</a>
+            <a href="#top">Back to top</a>
+          </nav>
         </div>
-
-        <p className="mt-16 text-xs text-white/30">© {new Date().getFullYear()} Brendon Oleghe. Remote · Global</p>
       </div>
     </footer>
   )

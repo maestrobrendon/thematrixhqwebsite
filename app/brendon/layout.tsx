@@ -1,65 +1,57 @@
 import type React from "react"
-import type { Metadata } from "next"
-import { Chakra_Petch, DM_Mono, Just_Me_Again_Down_Here, Inter } from "next/font/google"
+import type { Metadata, Viewport } from "next"
+import { Anybody, Hanken_Grotesk, DM_Mono, Just_Me_Again_Down_Here } from "next/font/google"
 import "./brendon.css"
 import { personSchema } from "./lib/schema"
 import { SmoothScroll } from "./components/SmoothScroll"
 
-// Display font for the wordmark + "FEATURED WORKS" heading. The reference design
-// uses a licensed font called "Flux" (per its Figma file) that isn't available as a
-// web font — Chakra Petch is the closest free substitute with the same blocky,
-// technical letterforms. Swap this import if a "Flux" webfont license is acquired.
-const displayFont = Chakra_Petch({
+// v2 type system (spec §3.3): Anybody carries the kinetic width axis for the
+// name/email/headings; Hanken Grotesk is body/UI; DM Mono is reserved for
+// spec values (Inspect mode, the hero size readout); the hand font is
+// reserved for the two hero sticky notes + the polaroid caption.
+const display = Anybody({
   subsets: ["latin"],
-  weight: ["600", "700"],
+  axes: ["wdth"],
   variable: "--font-display",
   display: "swap",
 })
-
-// Monospace accent — ruler bar numerals + clock, matching the reference site's own
-// shipped DM Mono webfont for that chrome.
-const dmMono = DM_Mono({
+const body = Hanken_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-mono",
+  variable: "--font-body",
   display: "swap",
 })
-
-// Handwritten sticky-note font ("my name is", "explore my work!", captions)
-const handwritten = Just_Me_Again_Down_Here({
+const spec = DM_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-spec",
+  display: "swap",
+  preload: false,
+})
+const hand = Just_Me_Again_Down_Here({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-hand",
   display: "swap",
-})
-
-// Body / UI font
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-body",
-  display: "swap",
+  preload: false,
 })
 
 // Fallback metadata for any /brendon route that doesn't define its own —
 // each real route (page.tsx, about/page.tsx) sets its own more specific
 // title/description/OG data that takes precedence over this.
 export const metadata: Metadata = {
-  // maestrobrendon.com is the one canonical domain for this content (per the
-  // SEO strategy) — brendon.thematrixhq.com and thematrixhq.com/brendon serve
-  // the same pages via middleware.ts rewrites (not a redirect), so every
-  // relative canonical/OG URL below needs to resolve against this base to
-  // consolidate ranking signal onto the one domain instead of splitting it
-  // across three reachable hosts.
   metadataBase: new URL("https://maestrobrendon.com"),
-  title: "Brendon Oleghe — Multidisciplinary Designer",
+  title: "Brendon Oleghe (Maestro Brendon) — Senior brand & product designer",
   description:
-    "Brendon Oleghe — multidisciplinary designer working across brand identity, design systems, motion, and web design.",
+    "Brendon Oleghe (Maestro Brendon) designs brand, product and motion as one system, then builds and ships it. 7+ years, 80+ brands across fintech, Web3, real estate and AI.",
+}
+
+export const viewport: Viewport = {
+  themeColor: "#3A3E33",
 }
 
 export default function BrendonLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className={`${displayFont.variable} ${dmMono.variable} ${handwritten.variable} ${inter.variable} brendon-scope`}>
+    <div className={`${display.variable} ${spec.variable} ${hand.variable} ${body.variable} brendon-scope`}>
       {/* Person structured data — read by search engines to resolve
           "Brendon Oleghe" and "Maestro Brendon" as one entity. See
           ./lib/schema.ts for the ground rules behind what's in here. */}
