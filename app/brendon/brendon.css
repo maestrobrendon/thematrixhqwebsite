@@ -67,6 +67,12 @@ html.lenis, html.lenis body { height: auto; }
    any container here (e.g. .about, or the first block inside a work-page
    grid), forcing an unwanted full-viewport-tall box. */
 .brendon-scope section:first-of-type { min-height: 0; }
+/* Same leak, different rule: the root layout also forces `nav{height:68px}`
+   for the main site's own nav bar, which overrode the dock's natural
+   content-driven height and pushed its flex-centered links 10px below the
+   active pill (an absolutely positioned sibling sized for the intended,
+   un-inflated height). */
+.brendon-scope .dock { height: auto; }
 .brendon-scope img, .brendon-scope video { display: block; max-width: 100%; }
 .brendon-scope a { color: inherit; }
 .brendon-scope button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
@@ -114,7 +120,10 @@ html.lenis, html.lenis body { height: auto; }
 .brendon-scope .dock a:hover, .brendon-scope .dock button:hover, .brendon-scope .dock a.is-active { color: var(--ink-on-dark); }
 .brendon-scope .dock .mark { padding: 0 10px; color: var(--ink-on-dark); }
 .brendon-scope .dock .mark svg { width: 20px; height: 20px; }
-.brendon-scope .dock .pill { position: absolute; z-index: 0; top: 5px; left: 0; height: 38px; width: 0; border-radius: 11px; background: rgba(255,255,255,.1); pointer-events: none; opacity: 0; }
+/* top+bottom (not a fixed height) so the pill always matches the current
+   breakpoint's nav-item height (38px desktop, 44px mobile) instead of
+   drifting out of sync with it. */
+.brendon-scope .dock .pill { position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 0; width: 0; border-radius: 11px; background: rgba(255,255,255,.1); pointer-events: none; opacity: 0; }
 .brendon-scope .dock .sep { width: 1px; height: 20px; background: rgba(255,255,255,.12); margin: 0 4px; }
 .brendon-scope .dock .icon-btn { padding: 0 10px; }
 .brendon-scope .dock .icon-btn svg { width: 18px; height: 18px; }
