@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { jwtVerify } from "jose"
 import { COOKIE_NAME, JWT_SECRET } from "@/lib/wiki/auth"
-import { isBrendonHost } from "@/app/brendon/lib/isBrendonHost"
 
 const WIKI_PUBLIC = ["/access", "/api/auth", "/api/logout"]
 
@@ -12,9 +11,8 @@ function wikiSecret() {
 // robots.ts and sitemap.ts are root-level special files (generating
 // /robots.txt and /sitemap.xml) that already branch on the request's own
 // Host header internally — they must never be rewritten, or Next.js looks
-// for a nonexistent /brendon/robots.txt (etc.) and 404s instead of running
-// that branch at all. Confirmed by hitting /robots.txt and /sitemap.xml with
-// a maestrobrendon.com Host header before this bypass existed.
+// for a nonexistent /wiki/robots.txt (etc.) and 404s instead of running
+// that branch at all.
 const UNREWRITTEN_PATHS = new Set(["/robots.txt", "/sitemap.xml"])
 
 export async function middleware(req: NextRequest) {
@@ -23,13 +21,6 @@ export async function middleware(req: NextRequest) {
 
   if (UNREWRITTEN_PATHS.has(pathname)) {
     return NextResponse.next()
-  }
-
-  // brendon.thematrixhq.com/*, maestrobrendon.com/* → /brendon/* (same content as /brendon)
-  if (isBrendonHost(hostname)) {
-    const rewriteUrl = req.nextUrl.clone()
-    rewriteUrl.pathname = `/brendon${pathname === "/" ? "" : pathname}`
-    return NextResponse.rewrite(rewriteUrl)
   }
 
   const isWiki = hostname.startsWith("wiki.")

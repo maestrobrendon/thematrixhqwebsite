@@ -18,7 +18,7 @@ export { gsap, ScrollTrigger, Draggable, InertiaPlugin, SplitText, Flip }
 
 // ── Reusable scroll-reveal hooks ──────────────────────────────────────────
 // The GSAP equivalent of framer-motion's `initial + whileInView +
-// viewport:{once:true}` pattern — one mechanism reused across every /brendon
+// viewport:{once:true}` pattern — one mechanism reused across every
 // component instead of each one hand-rolling its own ScrollTrigger.
 
 type RevealOptions = {
