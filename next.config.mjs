@@ -17,6 +17,15 @@ const nextConfig = {
       },
     ],
   },
+  // Old résumés and links still point at the portfolio's previous home on
+  // this site; it now lives at maestrobrendon.com.
+  async redirects() {
+    return [
+      { source: "/brendon", destination: "https://www.maestrobrendon.com/", permanent: true },
+      { source: "/brendon/:path*", destination: "https://www.maestrobrendon.com/:path*", permanent: true },
+      { source: "/brendon-archive-1", destination: "https://www.maestrobrendon.com/", permanent: true },
+    ]
+  },
 }
 
 export default nextConfig
